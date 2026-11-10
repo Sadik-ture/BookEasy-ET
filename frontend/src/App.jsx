@@ -1,45 +1,43 @@
 import { Routes, Route } from "react-router-dom";
-import Navbar from "./components/common/Navbar";
-import Footer from "./components/common/Footer";
+import PublicLayout from "./layouts/PublicLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Home from "./pages/public/Home";
 import Login from "./pages/public/Login";
 import Signup from "./pages/public/Signup";
 import Dashboard from "./pages/customer/Dashboard";
-
-function Placeholder({ title }) {
-  return (
-    <div className="mx-auto max-w-7xl px-4 py-24 text-center">
-      <h1 className="text-3xl font-bold text-slate-900">{title}</h1>
-      <p className="mt-2 text-slate-500">Coming in the next steps.</p>
-    </div>
-  );
-}
+import ComingSoon from "./pages/common/ComingSoon";
 
 export default function App() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <Navbar />
-      <main className="flex-1">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/businesses" element={<Placeholder title="Explore Businesses" />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/about" element={<Placeholder title="About" />} />
-          <Route path="/contact" element={<Placeholder title="Contact" />} />
-          <Route path="*" element={<Placeholder title="Page not found" />} />
-        </Routes>
-      </main>
-      <Footer />
-    </div>
+    <Routes>
+      {/* Public pages with navbar + footer */}
+      <Route element={<PublicLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/businesses" element={<ComingSoon title="Explore Businesses" message="Coming in Step 3." />} />
+        <Route path="/about" element={<ComingSoon title="About" />} />
+        <Route path="/contact" element={<ComingSoon title="Contact" />} />
+        <Route path="*" element={<ComingSoon title="Page not found" message="That page doesn't exist." />} />
+      </Route>
+
+      {/* Full-screen auth pages */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+
+      {/* Signed-in area with the sidebar */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <DashboardLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/my-bookings" element={<ComingSoon title="My Bookings" message="Coming in Step 4." />} />
+        <Route path="/my-orders" element={<ComingSoon title="My Orders" message="Coming in Step 5." />} />
+        <Route path="/favorites" element={<ComingSoon title="Favorites" />} />
+        <Route path="/profile" element={<ComingSoon title="Profile" />} />
+      </Route>
+    </Routes>
   );
 }

@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Mail, Lock } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { parseApiError } from "../../utils/apiError";
+import AuthShell from "../../components/common/AuthShell";
 import FormField from "../../components/common/FormField";
+import Button from "../../components/ui/Button";
 
 export default function Login() {
-  const { login } = useAuth();
+  const { user, loading, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const redirectTo = location.state?.from || "/dashboard";
@@ -15,6 +18,8 @@ export default function Login() {
   const [error, setError] = useState("");
   const [fields, setFields] = useState({});
   const [submitting, setSubmitting] = useState(false);
+
+  if (!loading && user) return <Navigate to={redirectTo} replace />;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,53 +39,48 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-brand-100 via-white to-brand-50 px-4 py-14">
-      <div className="mx-auto max-w-md rounded-3xl bg-white p-8 shadow-xl shadow-brand-600/10 ring-1 ring-slate-100">
-        <h1 className="text-2xl font-bold text-slate-900">Welcome back</h1>
-        <p className="mt-1 text-sm text-slate-500">Log in to manage your bookings and orders.</p>
-
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <FormField
-            label="Email"
-            type="email"
-            autoComplete="email"
-            placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            error={fields.email}
-            required
-          />
-          <FormField
-            label="Password"
-            type="password"
-            autoComplete="current-password"
-            placeholder="Your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            error={fields.password}
-            required
-          />
-
-          {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-xl bg-brand-600 py-3 text-sm font-semibold text-white shadow-md shadow-brand-600/25 transition hover:bg-brand-700 disabled:opacity-60"
-          >
-            {submitting ? "Logging in…" : "Log in"}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-slate-600">
+    <AuthShell
+      title="Welcome back"
+      subtitle="Log in to manage your bookings and orders."
+      footer={
+        <>
           New to BookEasy ET?{" "}
-          <Link to="/signup" className="font-semibold text-brand-600 hover:text-brand-700">
+          <Link to="/signup" className="font-bold text-brand-600 hover:text-brand-700">
             Create an account
           </Link>
-        </p>
-      </div>
-    </div>
+        </>
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <FormField
+          label="Email"
+          type="email"
+          icon={Mail}
+          autoComplete="email"
+          placeholder="you@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          error={fields.email}
+          required
+        />
+        <FormField
+          label="Password"
+          type="password"
+          icon={Lock}
+          autoComplete="current-password"
+          placeholder="Your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          error={fields.password}
+          required
+        />
+
+        {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</p>}
+
+        <Button type="submit" size="lg" loading={submitting} className="w-full">
+          {submitting ? "Logging in…" : "Log in"}
+        </Button>
+      </form>
+    </AuthShell>
   );
 }
