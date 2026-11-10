@@ -3,6 +3,7 @@ import PublicLayout from "./layouts/PublicLayout";
 import DashboardLayout from "./layouts/DashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Home from "./pages/public/Home";
+import Explore from "./pages/public/Explore";
 import Login from "./pages/public/Login";
 import Signup from "./pages/public/Signup";
 import Dashboard from "./pages/customer/Dashboard";
@@ -14,7 +15,11 @@ export default function App() {
       {/* Public pages with navbar + footer */}
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/businesses" element={<ComingSoon title="Explore Businesses" message="Coming in Step 3." />} />
+        <Route path="/businesses" element={<Explore />} />
+        <Route
+          path="/business/:slug"
+          element={<ComingSoon title="Business details" message="The business page with services, menu and booking is coming in Step 4." />}
+        />
         <Route path="/about" element={<ComingSoon title="About" />} />
         <Route path="/contact" element={<ComingSoon title="Contact" />} />
         <Route path="*" element={<ComingSoon title="Page not found" message="That page doesn't exist." />} />

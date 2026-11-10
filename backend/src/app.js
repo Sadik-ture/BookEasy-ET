@@ -4,6 +4,7 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import authRoutes from "./modules/auth/auth.routes.js";
+import marketplaceRoutes from "./modules/marketplace/marketplace.routes.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.get("/api/v1/health", (req, res) => {
 
 // Routes
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1", marketplaceRoutes);
 
 // 404 handler
 app.use((req, res) => {
