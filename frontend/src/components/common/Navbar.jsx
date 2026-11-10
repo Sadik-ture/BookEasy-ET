@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { Menu, X, LogOut, LayoutDashboard } from "lucide-react";
 import Logo from "./Logo";
+import { useAuth } from "../../context/AuthContext";
 
 const links = [
   { to: "/", label: "Home" },
@@ -12,11 +13,19 @@ const links = [
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const { user, loading, logout } = useAuth();
+  const navigate = useNavigate();
 
   const linkClass = ({ isActive }) =>
     `text-sm font-medium transition hover:text-brand-600 ${
       isActive ? "text-brand-700" : "text-slate-700"
     }`;
+
+  const handleLogout = async () => {
+    await logout();
+    setOpen(false);
+    navigate("/");
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-slate-100 bg-white/90 backdrop-blur">
@@ -32,16 +41,37 @@ export default function Navbar() {
           ))}
         </nav>
 
+        {/* Desktop auth area */}
         <div className="hidden items-center gap-3 md:flex">
-          <Link to="/login" className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-brand-600">
-            Login
-          </Link>
-          <Link
-            to="/signup"
-            className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-brand-600/25 transition hover:bg-brand-700"
-          >
-            Sign Up
-          </Link>
+          {loading ? null : user ? (
+            <>
+              <Link
+                to="/dashboard"
+                className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-brand-50 hover:text-brand-700"
+              >
+                <LayoutDashboard size={16} />
+                {user.fullName.split(" ")[0]}
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              >
+                <LogOut size={16} /> Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="px-3 py-2 text-sm font-medium text-slate-700 hover:text-brand-600">
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-brand-600/25 transition hover:bg-brand-700"
+              >
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile toggle */}
@@ -69,15 +99,34 @@ export default function Navbar() {
                 {l.label}
               </NavLink>
             ))}
+            {user && (
+              <NavLink
+                to="/dashboard"
+                onClick={() => setOpen(false)}
+                className="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-brand-50"
+              >
+                Dashboard
+              </NavLink>
+            )}
           </nav>
-          <div className="flex gap-3">
-            <Link to="/login" onClick={() => setOpen(false)} className="flex-1 rounded-lg border border-slate-200 py-2.5 text-center text-sm font-medium">
-              Login
-            </Link>
-            <Link to="/signup" onClick={() => setOpen(false)} className="flex-1 rounded-lg bg-brand-600 py-2.5 text-center text-sm font-semibold text-white">
-              Sign Up
-            </Link>
-          </div>
+
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="w-full rounded-lg border border-slate-200 py-2.5 text-center text-sm font-medium"
+            >
+              Logout
+            </button>
+          ) : (
+            <div className="flex gap-3">
+              <Link to="/login" onClick={() => setOpen(false)} className="flex-1 rounded-lg border border-slate-200 py-2.5 text-center text-sm font-medium">
+                Login
+              </Link>
+              <Link to="/signup" onClick={() => setOpen(false)} className="flex-1 rounded-lg bg-brand-600 py-2.5 text-center text-sm font-semibold text-white">
+                Sign Up
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </header>

@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
+import authRoutes from "./modules/auth/auth.routes.js";
 
 const app = express();
 
@@ -28,6 +29,9 @@ app.get("/api/v1/health", (req, res) => {
   });
 });
 
+// Routes
+app.use("/api/v1/auth", authRoutes);
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
@@ -41,7 +45,7 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(err.status || 500).json({
     success: false,
-    error: { code: "SERVER_ERROR", message: err.message || "Something went wrong" },
+    error: { code: "SERVER_ERROR", message: "Something went wrong" },
   });
 });
 
