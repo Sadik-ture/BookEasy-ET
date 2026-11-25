@@ -4,9 +4,12 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Home from "./pages/public/Home";
 import Explore from "./pages/public/Explore";
+import BusinessDetail from "./pages/public/BusinessDetail";
 import Login from "./pages/public/Login";
 import Signup from "./pages/public/Signup";
 import Dashboard from "./pages/customer/Dashboard";
+import MyBookings from "./pages/customer/MyBookings";
+import MyOrders from "./pages/customer/MyOrders";
 import ComingSoon from "./pages/common/ComingSoon";
 
 export default function App() {
@@ -16,10 +19,7 @@ export default function App() {
       <Route element={<PublicLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/businesses" element={<Explore />} />
-        <Route
-          path="/business/:slug"
-          element={<ComingSoon title="Business details" message="The business page with services, menu and booking is coming in Step 4." />}
-        />
+        <Route path="/business/:slug" element={<BusinessDetail />} />
         <Route path="/about" element={<ComingSoon title="About" />} />
         <Route path="/contact" element={<ComingSoon title="Contact" />} />
         <Route path="*" element={<ComingSoon title="Page not found" message="That page doesn't exist." />} />
@@ -38,8 +38,8 @@ export default function App() {
         }
       >
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/my-bookings" element={<ComingSoon title="My Bookings" message="Coming in Step 4." />} />
-        <Route path="/my-orders" element={<ComingSoon title="My Orders" message="Coming in Step 5." />} />
+        <Route path="/my-bookings" element={<MyBookings />} />
+        <Route path="/my-orders" element={<MyOrders />} />
         <Route path="/favorites" element={<ComingSoon title="Favorites" />} />
         <Route path="/profile" element={<ComingSoon title="Profile" />} />
       </Route>
