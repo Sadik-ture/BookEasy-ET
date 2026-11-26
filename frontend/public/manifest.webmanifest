@@ -1,0 +1,13 @@
+{
+  "name": "BookEasy ET",
+  "short_name": "BookEasy",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf9fd",
+  "theme_color": "#6d3df0",
+  "description": "Discover local businesses, book appointments and order food.",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

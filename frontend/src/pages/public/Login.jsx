@@ -77,6 +77,8 @@ export default function Login() {
 
         {error && <p className="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</p>}
 
+        <Link to="/forgot-password" className="block text-sm font-semibold text-brand-600">Forgot password?</Link>
+
         <Button type="submit" size="lg" loading={submitting} className="w-full">
           {submitting ? "Logging in…" : "Log in"}
         </Button>

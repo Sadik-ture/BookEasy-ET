@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Utensils } from "lucide-react";
+import { Utensils } from "lucide-react";
 import Button from "../ui/Button";
 import QtyStepper from "./QtyStepper";
 import { useCart } from "../../context/CartContext";
@@ -64,8 +64,8 @@ export default function MenuView({ business, categories }) {
                     {qty > 0 ? (
                       <QtyStepper value={qty} onChange={(n) => setQty(item.id, n)} />
                     ) : (
-                      <Button size="sm" onClick={() => add(business, item)}>
-                        Add <Plus size={15} />
+                      <Button size="sm" variant="outline" onClick={() => add(business, item)}>
+                        + Add
                       </Button>
                     )}
                   </li>

@@ -25,24 +25,18 @@ export default function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-900/5 bg-white/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-white/70 bg-white/90 backdrop-blur-xl">
       <div className="mx-auto flex h-18 max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
         <Logo />
 
-        {/* Desktop links */}
-        <nav className="hidden items-center gap-1 rounded-full bg-slate-100/80 p-1 md:flex">
+        <nav className="hidden items-center gap-8 md:flex">
           {links.map((l) => (
             <NavLink
               key={l.to}
               to={l.to}
               end={l.to === "/"}
               className={({ isActive }) =>
-                cn(
-                  "rounded-full px-4 py-2 text-sm font-semibold transition",
-                  isActive
-                    ? "bg-white text-brand-700 shadow-sm"
-                    : "text-slate-600 hover:text-ink-900"
-                )
+                cn("text-sm font-semibold transition", isActive ? "text-brand-600" : "text-slate-600 hover:text-ink-900")
               }
             >
               {l.label}
@@ -50,11 +44,10 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* Desktop auth */}
         <div className="hidden items-center gap-2 md:flex">
           {loading ? null : user ? (
             <>
-              <Button as={Link} to="/dashboard" variant="soft" size="sm">
+              <Button as={Link} to={user.role === "business_owner" ? "/manage" : "/dashboard"} variant="soft" size="sm">
                 <LayoutDashboard size={16} /> {user.fullName.split(" ")[0]}
               </Button>
               <Button variant="ghost" size="sm" onClick={handleLogout}>
@@ -100,7 +93,7 @@ export default function Navbar() {
           </nav>
           {user ? (
             <div className="flex gap-3">
-              <Button as={Link} to="/dashboard" variant="soft" className="flex-1" onClick={() => setOpen(false)}>
+              <Button as={Link} to={user.role === "business_owner" ? "/manage" : "/dashboard"} variant="soft" className="flex-1" onClick={() => setOpen(false)}>
                 Dashboard
               </Button>
               <Button variant="outline" className="flex-1" onClick={handleLogout}>

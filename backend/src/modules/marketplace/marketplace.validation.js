@@ -7,6 +7,7 @@ export const listQuerySchema = z.object({
   category: z.preprocess(emptyToUndefined, z.enum(CATEGORY_KEYS).optional()),
   search: z.preprocess(emptyToUndefined, z.string().trim().max(60, "Search is too long").optional()),
   sort: z.enum(["popular", "rating", "newest"]).default("popular"),
+  city: z.preprocess(emptyToUndefined, z.string().trim().max(80).optional()),
   page: z.coerce.number().int().min(1).max(1000).default(1),
   limit: z.coerce.number().int().min(1).max(24).default(12),
 });

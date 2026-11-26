@@ -152,7 +152,7 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
   return (
     <Card className="p-6">
       <h3 className="flex items-center gap-2 text-lg font-extrabold text-ink-900">
-        <CalendarCheck size={20} className="text-brand-600" /> Book an appointment
+        <CalendarCheck size={20} className="text-brand-600" /> Book an Appointment
       </h3>
 
       {/* Service */}

@@ -66,6 +66,14 @@ export function CartProvider({ children }) {
 
   const clear = useCallback(() => setCart(EMPTY), []);
 
+  const fill = useCallback((business, items) => {
+    const lines = items
+      .filter((i) => i?.id && i.quantity > 0)
+      .map((i) => ({ id: i.id, name: i.name, priceMinor: i.priceMinor, quantity: Math.min(MAX_QTY, i.quantity) }));
+    if (!lines.length) return;
+    setCart({ businessId: business.id, slug: business.slug, businessName: business.name, lines });
+  }, []);
+
   // Sync saved lines with the current menu (removed items disappear, prices update)
   const reconcile = useCallback((businessId, menuItems) => {
     setCart((prev) => {
@@ -82,7 +90,7 @@ export function CartProvider({ children }) {
     });
   }, []);
 
-  const value = useMemo(() => ({ cart, add, setQty, clear, reconcile }), [cart, add, setQty, clear, reconcile]);
+  const value = useMemo(() => ({ cart, add, setQty, clear, fill, reconcile }), [cart, add, setQty, clear, fill, reconcile]);
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 

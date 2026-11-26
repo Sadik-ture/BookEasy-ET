@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Check, Clock, TriangleAlert, UtensilsCrossed } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
@@ -50,6 +50,7 @@ export default function MyOrders() {
   const [reloadKey, setReloadKey] = useState(0);
   const [cancellingId, setCancellingId] = useState("");
   const [notice, setNotice] = useState({ type: "", text: "" });
+  const navigate = useNavigate();
 
   const load = useCallback(
     async (silent, signal) => {
@@ -198,14 +199,38 @@ export default function MyOrders() {
                   ))}
                 </ul>
                 {o.notes && <p className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">Note: {o.notes}</p>}
+                {o.collectionNote && <p className="mt-3 text-sm font-medium text-ink-800">{o.collectionNote}</p>}
+                {o.estimatedReadyAt && (
+                  <p className="mt-1 text-sm text-slate-500">Estimated ready {formatDateTime(o.estimatedReadyAt, tz)}</p>
+                )}
 
                 <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
                   <span className="font-extrabold text-ink-900">{formatPrice(o.totalMinor, o.currency)}</span>
-                  {o.status === "pending" && (
-                    <Button size="sm" variant="outline" loading={cancellingId === o.id} onClick={() => handleCancel(o)}>
-                      Cancel order
-                    </Button>
-                  )}
+                  <div className="flex gap-2">
+                    {o.business?.slug && o.items?.some((i) => i.menuItemId) && (
+                      <Button
+                        size="sm"
+                        variant="soft"
+                        onClick={() => {
+                          sessionStorage.setItem(
+                            "bookeasy_reorder",
+                            JSON.stringify({
+                              slug: o.business.slug,
+                              items: o.items.filter((i) => i.menuItemId).map((i) => ({ menuItemId: i.menuItemId, quantity: i.quantity })),
+                            })
+                          );
+                          navigate(`/business/${o.business.slug}`);
+                        }}
+                      >
+                        Order again
+                      </Button>
+                    )}
+                    {o.status === "pending" && (
+                      <Button size="sm" variant="outline" loading={cancellingId === o.id} onClick={() => handleCancel(o)}>
+                        Cancel order
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </Card>
             );

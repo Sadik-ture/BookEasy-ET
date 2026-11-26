@@ -22,6 +22,7 @@ export default function CartPanel({ business, onStale }) {
   const [step, setStep] = useState("cart"); // cart | checkout | done
   const [phone, setPhone] = useState(user?.phone || "");
   const [notes, setNotes] = useState("");
+  const [promo, setPromo] = useState("");
   const [error, setError] = useState("");
   const [fields, setFields] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -30,6 +31,8 @@ export default function CartPanel({ business, onStale }) {
 
   const lines = cart.businessId === business.id ? cart.lines : [];
   const total = lines.reduce((sum, l) => sum + l.priceMinor * l.quantity, 0);
+  const promoCode = promo.trim().toUpperCase();
+  const discount = promoCode === "BOOK10" ? Math.floor(total * 0.1) : 0;
   const closed = business.isOpen === false;
 
   const goCheckout = () => {
@@ -52,6 +55,7 @@ export default function CartPanel({ business, onStale }) {
         items: lines.map((l) => ({ menuItemId: l.id, quantity: l.quantity })),
         phone: phone.trim(),
         notes: notes.trim() || undefined,
+        promoCode: promoCode || undefined,
         clientRequestId: requestId.current,
       });
       setPlaced(order);
@@ -62,7 +66,8 @@ export default function CartPanel({ business, onStale }) {
       const parsed = parseApiError(err);
       setError(parsed.message);
       setFields(parsed.fields);
-      if (err.response?.status === 409) {
+      const code = err.response?.data?.error?.code;
+      if (err.response?.status === 409 && code !== "PROMO_USED") {
         setStep("cart");
         onStale?.(); // reload the menu so prices and availability are current
       }
@@ -173,9 +178,23 @@ export default function CartPanel({ business, onStale }) {
             ))}
           </ul>
 
-          <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-4">
-            <span className="text-base font-bold text-ink-900">Total</span>
-            <span className="text-2xl font-extrabold text-ink-900">{formatPrice(total)}</span>
+          <div className="mt-2 space-y-1 border-t border-slate-100 pt-4">
+            {discount > 0 && (
+              <>
+                <div className="flex items-center justify-between text-sm text-slate-500">
+                  <span>Subtotal</span>
+                  <span>{formatPrice(total)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm font-semibold text-emerald-700">
+                  <span>BOOK10</span>
+                  <span>− {formatPrice(discount)}</span>
+                </div>
+              </>
+            )}
+            <div className="flex items-center justify-between">
+              <span className="text-base font-bold text-ink-900">Total</span>
+              <span className="text-2xl font-extrabold text-ink-900">{formatPrice(total - discount)}</span>
+            </div>
           </div>
 
           {error && (
@@ -220,12 +239,22 @@ export default function CartPanel({ business, onStale }) {
                 />
               </label>
 
+              <label className="block">
+                <span className="mb-1.5 block text-sm font-semibold text-ink-800">Promo code</span>
+                <input
+                  value={promo}
+                  onChange={(e) => setPromo(e.target.value)}
+                  placeholder="BOOK10"
+                  className="h-11 w-full rounded-2xl border border-slate-200 px-4 text-sm uppercase outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+                />
+              </label>
+
               <div className="flex gap-3">
                 <Button variant="outline" onClick={() => setStep("cart")} disabled={submitting}>
                   <ArrowLeft size={16} /> Back
                 </Button>
                 <Button className="flex-1" size="lg" loading={submitting} onClick={placeOrder}>
-                  {submitting ? "Placing…" : `Place order · ${formatPrice(total)}`}
+                  {submitting ? "Placing…" : `Place order · ${formatPrice(total - discount)}`}
                 </Button>
               </div>
             </div>

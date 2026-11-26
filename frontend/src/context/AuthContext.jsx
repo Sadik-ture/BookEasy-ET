@@ -5,36 +5,53 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [memberships, setMemberships] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const applySession = (data) => {
+    setUser(data.user);
+    setMemberships(data.memberships || []);
+  };
 
   // Check if we already have a valid session cookie
   useEffect(() => {
     api
       .get("/auth/me")
-      .then((res) => setUser(res.data.data.user))
-      .catch(() => setUser(null))
+      .then((res) => applySession(res.data.data))
+      .catch(() => {
+        setUser(null);
+        setMemberships([]);
+      })
       .finally(() => setLoading(false));
   }, []);
 
   const login = async (email, password) => {
     const res = await api.post("/auth/login", { email, password });
-    setUser(res.data.data.user);
+    applySession(res.data.data);
     return res.data.data.user;
   };
 
   const register = async (form) => {
     const res = await api.post("/auth/register", form);
-    setUser(res.data.data.user);
+    applySession(res.data.data);
     return res.data.data.user;
+  };
+
+  const refresh = async () => {
+    const res = await api.get("/auth/me");
+    applySession(res.data.data);
+    return res.data.data;
   };
 
   const logout = async () => {
     await api.post("/auth/logout");
     setUser(null);
+    setMemberships([]);
+    localStorage.removeItem("bookeasy_workspace");
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, memberships, loading, login, register, logout, refresh }}>
       {children}
     </AuthContext.Provider>
   );

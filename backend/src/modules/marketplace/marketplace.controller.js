@@ -2,6 +2,7 @@ import Business from "../businesses/business.model.js";
 import { CATEGORIES } from "../businesses/business.constants.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import { isOpenNow } from "../../utils/openNow.js";
+import PlatformSetting from "../admin/setting.model.js";
 
 const escapeRegex = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -30,14 +31,20 @@ const SORTS = {
 
 // GET /api/v1/businesses
 export const listBusinesses = asyncHandler(async (req, res) => {
-  const { category, search, sort, page, limit } = req.validatedQuery;
+  const { category, search, sort, page, limit, city } = req.validatedQuery;
 
   const filter = { status: "approved" }; // only approved businesses are public
   if (category) filter.category = category;
+  const and = [];
+  if (city) {
+    const rx = new RegExp(`^${escapeRegex(city)}$`, "i");
+    and.push({ $or: [{ "address.city": rx }, { "address.area": rx }] });
+  }
   if (search) {
     const rx = new RegExp(escapeRegex(search), "i");
-    filter.$or = [{ name: rx }, { tags: rx }, { "address.area": rx }, { description: rx }];
+    and.push({ $or: [{ name: rx }, { tags: rx }, { "address.area": rx }, { description: rx }] });
   }
+  if (and.length) filter.$and = and;
 
   const [items, total] = await Promise.all([
     Business.find(filter)
@@ -86,9 +93,13 @@ export const listCategories = asyncHandler(async (req, res) => {
     { $group: { _id: "$category", count: { $sum: 1 } } },
   ]);
   const counts = Object.fromEntries(rows.map((r) => [r._id, r.count]));
+  const setting = await PlatformSetting.findOne({ key: "categoryLabels" }).lean();
+  const labels = setting?.value || {};
 
   res.json({
     success: true,
-    data: { categories: CATEGORIES.map((c) => ({ ...c, count: counts[c.key] || 0 })) },
+    data: {
+      categories: CATEGORIES.map((c) => ({ ...c, label: labels[c.key] || c.label, count: counts[c.key] || 0 })),
+    },
   });
 });

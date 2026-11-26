@@ -17,7 +17,7 @@ const columns = [
     links: [
       { to: "/about", label: "About" },
       { to: "/contact", label: "Contact" },
-      { to: "/signup", label: "List your business" },
+     { to: "/list-your-business", label: "List your business" },
     ],
   },
   {
@@ -25,6 +25,8 @@ const columns = [
     links: [
       { to: "/login", label: "Login" },
       { to: "/signup", label: "Sign Up" },
+      { to: "/privacy", label: "Privacy" },
+      { to: "/terms", label: "Terms" },
     ],
   },
 ];

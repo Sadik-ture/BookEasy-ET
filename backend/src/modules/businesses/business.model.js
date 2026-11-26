@@ -23,13 +23,22 @@ const businessSchema = new mongoose.Schema(
       line: { type: String, trim: true, default: "" },
       area: { type: String, trim: true, default: "" },
       city: { type: String, trim: true, default: "Addis Ababa" },
+      lat: { type: Number },
+      lng: { type: Number },
     },
     coverImage: { type: String, default: "" },
     logo: { type: String, default: "" },
+    gallery: [{ type: String }],
+    // Owners can pause new bookings and orders without hiding the public profile.
+    acceptingRequests: { type: Boolean, default: true },
     tags: [{ type: String, trim: true }],
     openingHours: [hoursSchema],
     timezone: { type: String, default: "Africa/Addis_Ababa" },
     status: { type: String, enum: BUSINESS_STATUSES, default: "pending" },
+    bookingSettings: {
+      // true = bookings are confirmed instantly, false = business must confirm
+      autoConfirm: { type: Boolean, default: false },
+    },
     // Placeholders until the reviews feature is built
     ratingAvg: { type: Number, default: 0, min: 0, max: 5 },
     ratingCount: { type: Number, default: 0, min: 0 },

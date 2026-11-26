@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { CalendarDays, Clock, MapPin, TriangleAlert, User } from "lucide-react";
+import { CalendarDays, CalendarPlus, Clock, MapPin, TriangleAlert, User } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import Badge from "../../components/ui/Badge";
@@ -8,6 +8,7 @@ import { fetchMyBookings, cancelBooking } from "../../services/bookingService";
 import { parseApiError } from "../../utils/apiError";
 import { formatDateTime, formatDuration, formatPrice } from "../../utils/format";
 import { cn } from "../../utils/cn";
+import { downloadBookingCalendar } from "../../utils/calendar";
 
 const STATUS = {
   pending: { label: "Pending", tone: "warning" },
@@ -181,14 +182,19 @@ export default function MyBookings() {
                     <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
                       <span className="font-extrabold text-ink-900">{formatPrice(b.priceMinor, b.currency)}</span>
                       {scope === "upcoming" && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          loading={cancellingId === b.id}
-                          onClick={() => handleCancel(b)}
-                        >
-                          Cancel booking
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="soft" onClick={() => downloadBookingCalendar(b)}>
+                            <CalendarPlus size={15} /> Calendar
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            loading={cancellingId === b.id}
+                            onClick={() => handleCancel(b)}
+                          >
+                            Cancel booking
+                          </Button>
+                        </div>
                       )}
                     </div>
                   </div>

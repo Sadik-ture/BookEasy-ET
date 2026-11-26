@@ -8,8 +8,9 @@ import {
   SearchX,
   TriangleAlert,
   Utensils,
-  MessageSquareText,
   ShoppingBag,
+  Share2,
+  Navigation,
 } from "lucide-react";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
@@ -22,7 +23,10 @@ import { fetchBusiness, fetchServices, fetchStaff, fetchMenu } from "../../servi
 import { getCategory } from "../../utils/categories";
 import { todayIn, weekdayOf } from "../../utils/dates";
 import { formatClock, formatCount, formatPrice } from "../../utils/format";
+import ReviewsPanel from "../../components/reviews/ReviewsPanel";
 import { cn } from "../../utils/cn";
+import { mapsLink, rememberBusiness } from "../../utils/recent";
+import FavoriteButton from "../../components/marketplace/FavoriteButton";
 
 const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 const DAY_ORDER = [1, 2, 3, 4, 5, 6, 0];
@@ -58,8 +62,9 @@ function Skeleton() {
 
 export default function BusinessDetail() {
   const { slug } = useParams();
-  const { cart, reconcile } = useCart();
+  const { cart, reconcile, fill } = useCart();
   const [state, setState] = useState({ status: "loading", business: null });
+  const [copied, setCopied] = useState(false);
   const [catalog, setCatalog] = useState({ services: [], staff: [], menu: [] });
   const [tab, setTab] = useState("services");
   const [serviceId, setServiceId] = useState("");
@@ -96,6 +101,32 @@ export default function BusinessDetail() {
 
     return () => controller.abort();
   }, [slug, reconcile]);
+
+  useEffect(() => {
+    if (state.status === "ready" && state.business) rememberBusiness(state.business);
+  }, [state.status, state.business]);
+
+  useEffect(() => {
+    if (!state.business || catalog.menu.length === 0) return;
+    let payload = null;
+    try {
+      payload = JSON.parse(sessionStorage.getItem("bookeasy_reorder") || "null");
+    } catch {
+      payload = null;
+    }
+    if (!payload || payload.slug !== state.business.slug) return;
+    sessionStorage.removeItem("bookeasy_reorder");
+    const flat = flattenMenu(catalog.menu);
+    const items = payload.items
+      .map((line) => {
+        const menuItem = flat.find((m) => String(m.id) === String(line.menuItemId));
+        return menuItem
+          ? { id: menuItem.id, name: menuItem.name, priceMinor: menuItem.priceMinor, quantity: line.quantity }
+          : null;
+      })
+      .filter(Boolean);
+    fill(state.business, items);
+  }, [state.business, catalog.menu, fill]);
 
   const { status, business } = state;
   if (status === "loading") return <Skeleton />;
@@ -151,15 +182,11 @@ export default function BusinessDetail() {
           {/* Header card */}
           <Card className="overflow-hidden">
             <div className={cn("relative h-52 bg-gradient-to-br sm:h-64", cat.cover)}>
-              <Icon size={160} className="absolute -bottom-8 -right-6 rotate-12 text-white/20" />
-              {business.coverImage && (
-                <img
-                  src={business.coverImage}
-                  alt={business.name}
-                  className="absolute inset-0 h-full w-full object-cover"
-                  onError={(e) => (e.currentTarget.style.display = "none")}
-                />
-              )}
+              <img
+                src={business.coverImage || cat.photo}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+              />
               <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-ink-900 backdrop-blur">
                 <Icon size={13} /> {cat.label.replace(/s$/, "")}
               </span>
@@ -176,7 +203,34 @@ export default function BusinessDetail() {
             </div>
 
             <div className="p-6">
-              <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">{business.name}</h1>
+              <div className="flex items-start justify-between gap-3">
+                <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">{business.name}</h1>
+                <div className="flex shrink-0 items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      const url = window.location.href;
+                      try {
+                        if (navigator.share) {
+                          await navigator.share({ title: business.name, url });
+                          return;
+                        }
+                      } catch {
+                        return;
+                      }
+                      await navigator.clipboard.writeText(url);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 1600);
+                    }}
+                    className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50"
+                    aria-label={copied ? "Link copied" : "Share"}
+                    title={copied ? "Link copied" : "Share"}
+                  >
+                    <Share2 size={16} />
+                  </button>
+                  <FavoriteButton businessId={business.id} />
+                </div>
+              </div>
 
               <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-600">
                 {business.ratingCount > 0 && (
@@ -187,9 +241,10 @@ export default function BusinessDetail() {
                   </span>
                 )}
                 {location && (
-                  <span className="flex items-center gap-1.5">
+                  <a href={mapsLink(business.address)} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-brand-600">
                     <MapPin size={15} /> {location}
-                  </span>
+                    <Navigation size={13} />
+                  </a>
                 )}
                 {business.phone && (
                   <a href={`tel:${business.phone.replace(/\s/g, "")}`} className="flex items-center gap-1.5 hover:text-brand-600">
@@ -199,6 +254,11 @@ export default function BusinessDetail() {
               </div>
 
               {business.description && <p className="mt-4 text-slate-600">{business.description}</p>}
+              {business.acceptingRequests === false && (
+                <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
+                  This business is not taking new bookings or orders right now.
+                </p>
+              )}
 
               {business.tags?.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
@@ -247,17 +307,7 @@ export default function BusinessDetail() {
                   </div>
                 ))}
 
-              {tab === "reviews" && (
-                <div className="grid place-items-center py-12 text-center">
-                  <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-600">
-                    <MessageSquareText size={24} />
-                  </span>
-                  <p className="mt-4 font-bold text-ink-900">Reviews are coming soon</p>
-                  <p className="mt-1 max-w-xs text-sm text-slate-500">
-                    After a completed visit, customers will be able to leave a review.
-                  </p>
-                </div>
-              )}
+              {tab === "reviews" && <ReviewsPanel slug={business.slug} />}
 
               {tab === "location" && (
                 <div className="grid gap-6 sm:grid-cols-2">

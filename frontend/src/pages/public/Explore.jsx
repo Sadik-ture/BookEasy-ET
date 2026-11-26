@@ -53,6 +53,7 @@ export default function Explore() {
   const searchParam = params.get("search") || "";
   const rawSort = params.get("sort");
   const sort = SORTS.some((s) => s.value === rawSort) ? rawSort : "popular";
+  const city = params.get("city") || "";
   const page = Math.max(1, parseInt(params.get("page"), 10) || 1);
 
   const [q, setQ] = useState(searchParam);
@@ -94,7 +95,7 @@ export default function Explore() {
     const controller = new AbortController();
     setState((s) => ({ ...s, status: "loading" }));
 
-    fetchBusinesses({ category, search: searchParam, sort, page, limit: PAGE_SIZE }, controller.signal)
+    fetchBusinesses({ category, search: searchParam, city, sort, page, limit: PAGE_SIZE }, controller.signal)
       .then((res) => setState({ status: "ready", items: res.data.items, meta: res.meta }))
       .catch((err) => {
         if (err.code === "ERR_CANCELED") return;
@@ -102,10 +103,10 @@ export default function Explore() {
       });
 
     return () => controller.abort();
-  }, [category, searchParam, sort, page, reloadKey]);
+  }, [category, searchParam, city, sort, page, reloadKey]);
 
   const { status, items, meta } = state;
-  const hasFilters = Boolean(category || searchParam);
+  const hasFilters = Boolean(category || searchParam || city);
   const activeCategory = getCategory(category);
   const total = Object.values(counts).reduce((a, b) => a + b, 0);
 
@@ -124,7 +125,7 @@ export default function Explore() {
       <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">
         {activeCategory ? activeCategory.label : "Explore Businesses"}
       </h1>
-      <p className="mt-1 text-slate-500">Find the best services near you</p>
+      <p className="mt-1 text-sm text-slate-500">Find the best services near you</p>
 
       {/* Toolbar */}
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -146,6 +147,14 @@ export default function Explore() {
             </button>
           )}
         </div>
+
+        <input
+          value={city}
+          onChange={(e) => updateParams({ city: e.target.value })}
+          placeholder="Area or city"
+          aria-label="Filter by area or city"
+          className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 sm:w-44"
+        />
 
         <div className="relative">
           <select

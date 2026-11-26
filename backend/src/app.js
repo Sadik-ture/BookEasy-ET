@@ -5,6 +5,12 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import authRoutes from "./modules/auth/auth.routes.js";
 import marketplaceRoutes from "./modules/marketplace/marketplace.routes.js";
+import bookingRoutes from "./modules/bookings/booking.routes.js";
+import catalogRoutes from "./modules/bookings/catalog.routes.js";
+import menuRoutes from "./modules/menu/menu.routes.js";
+import orderRoutes from "./modules/orders/order.routes.js";
+import manageRoutes from "./modules/manage/manage.routes.js";
+import meRoutes from "./modules/users/me.routes.js";
 
 const app = express();
 
@@ -32,6 +38,12 @@ app.get("/api/v1/health", (req, res) => {
 
 // Routes
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/me", meRoutes);
+app.use("/api/v1/manage", manageRoutes);
+app.use("/api/v1/bookings", bookingRoutes);
+app.use("/api/v1/orders", orderRoutes);
+app.use("/api/v1/businesses", catalogRoutes);
+app.use("/api/v1/businesses", menuRoutes);
 app.use("/api/v1", marketplaceRoutes);
 
 // 404 handler

@@ -45,7 +45,7 @@ export default function CategoryFilter({ value, onChange, counts = {}, total = 0
                   onClick={() => onChange(item.key)}
                   className={cn(
                     "flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold transition",
-                    active ? "bg-brand-600 text-white shadow-glow" : "text-slate-700 hover:bg-brand-50"
+                    active ? "bg-brand-50 text-brand-700" : "text-slate-600 hover:bg-slate-50"
                   )}
                 >
                   <item.icon size={18} />
@@ -54,7 +54,7 @@ export default function CategoryFilter({ value, onChange, counts = {}, total = 0
                     <span
                       className={cn(
                         "rounded-full px-2 py-0.5 text-xs",
-                        active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500"
+                        active ? "bg-brand-100 text-brand-700" : "bg-slate-100 text-slate-500"
                       )}
                     >
                       {item.count}
