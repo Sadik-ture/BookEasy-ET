@@ -1,41 +1,35 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { CalendarDays, UtensilsCrossed, Heart, CheckCircle2, Scissors, Flower2, Utensils, QrCode, Check, Store } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, CalendarDays, Heart, Share2, Store, UtensilsCrossed } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
-import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
-import Badge from "../../components/ui/Badge";
-import StatCard from "../../components/ui/StatCard";
 import { getSummary } from "../../services/manageService";
 import { fetchMyBookings } from "../../services/bookingService";
 import { fetchMyOrders } from "../../services/orderService";
 import { formatDateTime, formatPrice } from "../../utils/format";
-import { ORDER_STATUS } from "../../utils/orderStatus";
 import { cn } from "../../utils/cn";
 
-function EmptyState({ icon: Icon, title, text, action }) {
+const views = ["Blocks", "List", "Table"];
+
+function Panel({ className = "", children }) {
+  const painted = className.includes("bg-");
   return (
-    <div className="grid place-items-center px-6 py-10 text-center">
-      <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-600">
-        <Icon size={24} />
-      </span>
-      <p className="mt-4 font-bold text-ink-900">{title}</p>
-      <p className="mt-1 max-w-xs text-sm text-slate-500">{text}</p>
-      {action}
-    </div>
+    <section
+      className={cn(
+        "rounded-2xl border p-5 shadow-soft",
+        painted ? "" : "border-line bg-surface text-ink-900",
+        className
+      )}
+    >
+      {children}
+    </section>
   );
 }
 
-const quick = [
-  { to: "/businesses?category=barbershop", label: "Book a barber", icon: Scissors, color: "bg-brand-50 text-brand-600" },
-  { to: "/businesses?category=salon", label: "Book a salon", icon: Flower2, color: "bg-fuchsia-50 text-fuchsia-600" },
-  { to: "/businesses?category=restaurant", label: "Order food", icon: Utensils, color: "bg-orange-50 text-accent-600" },
-  { to: "/businesses", label: "Explore all", icon: QrCode, color: "bg-indigo-50 text-indigo-600" },
-];
-
 export default function Dashboard() {
   const { user } = useAuth();
-  const firstName = user.fullName.split(" ")[0];
+  const [view, setView] = useState("Blocks");
+  const [copied, setCopied] = useState(false);
   const [data, setData] = useState({ summary: null, bookings: [], orders: [] });
 
   useEffect(() => {
@@ -45,163 +39,224 @@ export default function Dashboard() {
       fetchMyBookings("upcoming", controller.signal),
       fetchMyOrders("active", controller.signal),
     ])
-      .then(([summary, bookings, orders]) => setData({ summary, bookings: bookings.slice(0, 3), orders: orders.slice(0, 3) }))
+      .then(([summary, bookings, orders]) => setData({ summary, bookings, orders }))
       .catch(() => {});
     return () => controller.abort();
   }, []);
 
   const s = data.summary;
-  const num = (n) => (s ? String(n) : "–");
-  const today = new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
+  const upcoming = s?.upcomingBookings ?? data.bookings.length;
+  const active = s?.activeOrders ?? data.orders.length;
+  const done = s?.completed ?? 0;
+  const saved = s?.favorites ?? 0;
+  const next = data.bookings[0];
+  const activity = [done, upcoming, active, saved, Math.max(upcoming, 1)];
+  const max = Math.max(...activity, 1);
+  const line = activity
+    .map((n, i) => {
+      const x = (i / (activity.length - 1)) * 100;
+      const y = 78 - (n / max) * 58;
+      return `${x},${y}`;
+    })
+    .join(" ");
 
-  const checklist = [
-    { label: "Create your account", done: true },
-    { label: "Add your phone number", done: Boolean(user.phone) },
-    { label: "Make your first booking or order", done: Boolean(s && s.upcomingBookings + s.activeOrders + s.completed > 0) },
+  const rows = [
+    ...data.bookings.map((b) => ({
+      id: b.id,
+      name: b.business?.name || "Booking",
+      meta: `${b.serviceName} · ${formatDateTime(b.startAt, b.business?.timezone)}`,
+      amount: formatPrice(b.priceMinor, b.currency),
+      up: true,
+    })),
+    ...data.orders.map((o) => ({
+      id: o.id,
+      name: o.business?.name || "Order",
+      meta: o.orderNumber,
+      amount: formatPrice(o.totalMinor, o.currency),
+      up: false,
+    })),
   ];
-  const doneCount = checklist.filter((c) => c.done).length;
+
+  const mixTotal = Math.max(upcoming + active + done + saved, 1);
+  const mix = [
+    { label: "Bookings", value: upcoming, color: "bg-brand-700" },
+    { label: "Orders", value: active, color: "bg-brand-500" },
+    { label: "Completed", value: done, color: "bg-brand-300" },
+    { label: "Favorites", value: saved, color: "bg-accent-500" },
+  ].map((m) => ({ ...m, width: `${Math.max(8, Math.round((m.value / mixTotal) * 100))}%` }));
+
+  const share = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
+    } catch {
+      /* clipboard unavailable */
+    }
+  };
+
+  const download = () => {
+    const lines = [
+      "BookEasy ET report",
+      `Upcoming bookings,${upcoming}`,
+      `Active orders,${active}`,
+      `Completed,${done}`,
+      `Favorites,${saved}`,
+      "",
+      ...rows.map((r) => `${r.name},${r.meta},${r.amount}`),
+    ];
+    const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "bookeasy-report.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
-    <div className="mx-auto max-w-6xl">
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-        <div>
-          <p className="text-sm font-semibold text-brand-600">{today}</p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-ink-900">Hello, {firstName} 👋</h1>
-          <p className="mt-1 text-slate-500">Here's what's happening with your bookings and orders.</p>
-        </div>
-        <div className="flex gap-3">
-          <Button as={Link} to="/businesses?category=salon">Book a service</Button>
-          <Button as={Link} to="/businesses?category=restaurant" variant="outline">Order food</Button>
+    <div>
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="font-display text-4xl font-medium tracking-tight">Dashboard</h1>
+        <button type="button" onClick={share} className="inline-flex items-center gap-1.5 text-sm font-medium text-brand-800">
+          <Share2 size={14} /> {copied ? "Copied" : "Share link"}
+        </button>
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          <div className="flex rounded-xl border border-line bg-surface p-1">
+            {views.map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setView(v)}
+                className={cn("rounded-lg px-3 py-1.5 text-sm font-medium", view === v ? "bg-brand-400 text-[#1a140c]" : "text-ink-700")}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+          <Button type="button" variant="outline" onClick={download}>
+            Download report
+          </Button>
         </div>
       </div>
 
-      {user.role === "business_owner" ? (
-        <Card className="mt-6 flex flex-col items-start justify-between gap-3 p-5 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-brand-50 text-brand-600"><Store size={20} /></span>
-            <div>
-              <p className="font-bold text-ink-900">You own a business on BookEasy ET</p>
-              <p className="text-sm text-slate-500">Manage bookings, orders and your page.</p>
-            </div>
-          </div>
-          <Button as={Link} to="/manage">Open business dashboard</Button>
-        </Card>
+      {view === "Table" ? (
+        <Panel className="mt-5 overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead className="text-ink-700">
+              <tr>
+                <th className="pb-3 font-semibold">Place</th>
+                <th className="pb-3 font-semibold">Detail</th>
+                <th className="pb-3 text-right font-semibold">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.length === 0 && (
+                <tr>
+                  <td colSpan={3} className="py-8 text-ink-700">Nothing booked or ordered yet.</td>
+                </tr>
+              )}
+              {rows.map((r) => (
+                <tr key={r.id} className="border-t border-line">
+                  <td className="py-3 font-semibold">{r.name}</td>
+                  <td className="py-3 text-ink-700">{r.meta}</td>
+                  <td className={cn("py-3 text-right font-semibold", r.up ? "text-brand-800" : "text-rose-700")}>{r.amount}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Panel>
       ) : (
-        <Card className="mt-6 flex flex-col items-start justify-between gap-3 p-5 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-orange-50 text-accent-600"><Store size={20} /></span>
-            <div>
-              <p className="font-bold text-ink-900">Own a barbershop, salon or restaurant?</p>
-              <p className="text-sm text-slate-500">Get your page online and start taking bookings and orders.</p>
+        <div className={cn("mt-5 grid gap-4", view === "List" ? "grid-cols-1" : "xl:grid-cols-[0.9fr_1.3fr]")}>
+          <Panel className="bg-ink-950 text-white">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium text-white/70">Next visit</p>
+              <Link to="/businesses" className="text-sm font-medium text-white/80">Book</Link>
             </div>
-          </div>
-          <Button as={Link} to="/list-your-business" variant="soft">List your business</Button>
-        </Card>
-      )}
-
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard dark icon={CalendarDays} label="Upcoming Bookings" value={num(s?.upcomingBookings)} hint="Scheduled" />
-        <StatCard icon={UtensilsCrossed} label="Active Orders" value={num(s?.activeOrders)} tone="green" />
-        <StatCard icon={CheckCircle2} label="Completed" value={num(s?.completed)} tone="amber" />
-        <StatCard icon={Heart} label="Favorites" value={num(s?.favorites)} tone="rose" />
-      </div>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.7fr_1fr]">
-        <div className="space-y-6">
-          <Card>
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
-              <h2 className="text-lg font-extrabold text-ink-900">Upcoming Bookings</h2>
-              <Link to="/my-bookings" className="text-sm font-bold text-brand-600 hover:text-brand-700">View all</Link>
+            <p className="mt-8 font-display text-3xl font-medium tracking-tight">{next ? next.business?.name : "No booking yet"}</p>
+            <p className="mt-2 text-sm text-white/70">{next ? `${next.serviceName} · ${formatDateTime(next.startAt, next.business?.timezone)}` : "Pick a barber, salon, or restaurant."}</p>
+            <div className="mt-8 flex gap-2">
+              <Button as={Link} to="/businesses?category=salon" size="sm" variant="light">
+                <ArrowUpRight size={15} /> Book
+              </Button>
+              <Button as={Link} to="/my-orders" size="sm" variant="outline" className="border-white/20 bg-transparent text-white hover:bg-surface/10">
+                <ArrowDownRight size={15} /> Orders
+              </Button>
             </div>
-            {data.bookings.length === 0 ? (
-              <EmptyState
-                icon={CalendarDays}
-                title="No upcoming bookings"
-                text="When you book a barber or salon, your appointments will show up here."
-                action={<Button as={Link} to="/businesses?category=barbershop" variant="soft" size="sm" className="mt-5">Find a barbershop</Button>}
-              />
+          </Panel>
+
+          <Panel>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Activity</h2>
+              <span className="rounded-full bg-paper px-3 py-1 text-xs font-medium text-ink-700">This month</span>
+            </div>
+            <svg viewBox="0 0 100 80" className="mt-4 h-44 w-full" role="img" aria-label="Activity chart">
+              <polyline fill="none" stroke="#146346" strokeWidth="1.6" points={line} />
+              <circle cx="50" cy={78 - ((activity[2] / max) * 58)} r="1.6" fill="#146346" />
+            </svg>
+            <p className="text-sm text-ink-700">
+              {upcoming} upcoming · {active} active orders · {done} completed
+            </p>
+          </Panel>
+
+          <Panel>
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Recent</h2>
+              <Link to="/my-bookings" className="text-sm font-medium text-brand-800">View all</Link>
+            </div>
+            {rows.length === 0 ? (
+              <p className="mt-6 text-sm text-ink-700">Bookings and orders show up here.</p>
             ) : (
-              <ul className="divide-y divide-slate-100">
-                {data.bookings.map((b) => (
-                  <li key={b.id} className="flex items-center justify-between gap-3 px-6 py-4">
-                    <div className="min-w-0">
-                      <p className="truncate font-bold text-ink-900">{b.business?.name}</p>
-                      <p className="text-sm text-slate-500">{b.serviceName} · {formatDateTime(b.startAt, b.business?.timezone)}</p>
-                    </div>
-                    <Badge tone={b.status === "confirmed" ? "success" : "warning"}>{b.status === "confirmed" ? "Confirmed" : "Pending"}</Badge>
+              <ul className="mt-4 space-y-3">
+                {rows.slice(0, 4).map((r) => (
+                  <li key={r.id} className="flex items-center gap-3">
+                    <span className="grid h-10 w-10 place-items-center rounded-xl bg-paper text-ink-800">
+                      {r.up ? <CalendarDays size={16} /> : <UtensilsCrossed size={16} />}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-sm font-bold">{r.name}</span>
+                      <span className="block truncate text-xs text-ink-700">{r.meta}</span>
+                    </span>
+                    <span className={cn("text-sm font-semibold", r.up ? "text-brand-800" : "text-rose-700")}>{r.amount}</span>
                   </li>
                 ))}
               </ul>
             )}
-          </Card>
+          </Panel>
 
-          <Card>
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-5">
-              <h2 className="text-lg font-extrabold text-ink-900">Active Orders</h2>
-              <Link to="/my-orders" className="text-sm font-bold text-brand-600 hover:text-brand-700">View all</Link>
-            </div>
-            {data.orders.length === 0 ? (
-              <EmptyState
-                icon={UtensilsCrossed}
-                title="No active orders"
-                text="Order takeaway and track the status here."
-                action={<Button as={Link} to="/businesses?category=restaurant" variant="soft" size="sm" className="mt-5">Browse restaurants</Button>}
-              />
-            ) : (
-              <ul className="divide-y divide-slate-100">
-                {data.orders.map((o) => {
-                  const st = ORDER_STATUS[o.status] || { label: o.status, tone: "neutral" };
-                  return (
-                    <li key={o.id} className="flex items-center justify-between gap-3 px-6 py-4">
-                      <div className="min-w-0">
-                        <p className="truncate font-bold text-ink-900">{o.business?.name}</p>
-                        <p className="text-sm text-slate-500">{o.orderNumber} · {formatPrice(o.totalMinor, o.currency)}</p>
+          <div className={cn("grid gap-4", view === "List" ? "" : "sm:grid-cols-[1.2fr_0.8fr]")}>
+            <Panel>
+              <h2 className="text-lg font-semibold">Your mix</h2>
+              <div className="mt-5 space-y-3">
+                {mix.map((m) => (
+                  <div key={m.label} className="flex items-center gap-3">
+                    <span className={cn("grid h-9 w-9 place-items-center rounded-lg text-xs font-semibold text-white", m.color, m.color === "bg-brand-300" && "text-ink-900")}>{m.value}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="h-1.5 overflow-hidden rounded-full bg-paper">
+                        <div className={cn("h-full rounded-full", m.color)} style={{ width: m.width }} />
                       </div>
-                      <Badge tone={st.tone}>{st.label}</Badge>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </Card>
+                      <p className="mt-1 text-xs text-ink-700">{m.label}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+            <Panel className="bg-brand-50">
+              <h2 className="font-display text-2xl font-medium">Book in one place</h2>
+              <p className="mt-2 text-sm text-ink-700">Barbers, salons, and restaurants across Addis Ababa.</p>
+              <div className="mt-6 flex gap-3 text-brand-800">
+                <Heart size={18} />
+                <Store size={18} />
+                <CalendarDays size={18} />
+              </div>
+              <Button as={Link} to={user.role === "business_owner" ? "/manage" : "/list-your-business"} size="sm" className="relative mt-6">
+                {user.role === "business_owner" ? "Open business" : "List your business"}
+              </Button>
+            </Panel>
+          </div>
         </div>
-
-        <div className="space-y-6">
-          <Card className="p-6">
-            <h2 className="text-lg font-extrabold text-ink-900">Quick actions</h2>
-            <div className="mt-4 grid grid-cols-2 gap-3">
-              {quick.map((q) => (
-                <Link key={q.label} to={q.to} className="rounded-2xl border border-slate-100 p-4 transition hover:-translate-y-0.5 hover:shadow-soft">
-                  <span className={cn("grid h-10 w-10 place-items-center rounded-xl", q.color)}>
-                    <q.icon size={18} />
-                  </span>
-                  <p className="mt-3 text-sm font-bold text-ink-900">{q.label}</p>
-                </Link>
-              ))}
-            </div>
-          </Card>
-
-          <Card className="p-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-extrabold text-ink-900">Getting started</h2>
-              <span className="text-xs font-bold text-slate-400">{doneCount}/{checklist.length}</span>
-            </div>
-            <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-              <div className="h-full rounded-full bg-gradient-to-r from-brand-500 to-brand-600 transition-all" style={{ width: `${(doneCount / checklist.length) * 100}%` }} />
-            </div>
-            <ul className="mt-5 space-y-3">
-              {checklist.map((c) => (
-                <li key={c.label} className="flex items-center gap-3 text-sm">
-                  <span className={cn("grid h-6 w-6 shrink-0 place-items-center rounded-full", c.done ? "bg-emerald-500 text-white" : "border-2 border-slate-200")}>
-                    {c.done && <Check size={14} />}
-                  </span>
-                  <span className={cn(c.done ? "text-slate-400 line-through" : "font-medium text-ink-800")}>{c.label}</span>
-                </li>
-              ))}
-            </ul>
-          </Card>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

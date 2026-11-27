@@ -25,7 +25,7 @@ export default function InfoPage({ title }) {
     <div className="mx-auto max-w-2xl px-4 py-16">
       <Card className="p-8">
         <h1 className="text-3xl font-extrabold">{page.title}</h1>
-        <p className="mt-4 leading-relaxed text-slate-600">{page.body}</p>
+        <p className="mt-4 leading-relaxed text-ink-700">{page.body}</p>
       </Card>
     </div>
   );

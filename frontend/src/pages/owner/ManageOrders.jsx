@@ -65,15 +65,15 @@ export default function ManageOrders() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">Orders</h1>
-      <p className="mt-1 text-slate-500">Oldest orders first. This page refreshes by itself.</p>
+      <h1 className="font-display text-4xl font-medium tracking-tight text-ink-900">Orders</h1>
+      <p className="mt-1 text-ink-700">Oldest orders first. This page refreshes by itself.</p>
 
-      <div className="mt-6 inline-flex rounded-2xl bg-slate-100 p-1">
+      <div className="mt-6 inline-flex rounded-2xl bg-surface p-1">
         {["active", "past"].map((s) => (
           <button
             key={s}
             onClick={() => setScope(s)}
-            className={cn("rounded-xl px-5 py-2 text-sm font-bold capitalize transition", scope === s ? "bg-white text-brand-700 shadow-sm" : "text-slate-500 hover:text-ink-900")}
+            className={cn("rounded-xl px-5 py-2 text-sm font-bold capitalize transition", scope === s ? "bg-surface text-brand-700 shadow-sm" : "text-ink-700 hover:text-ink-900")}
           >
             {s}
           </button>
@@ -83,7 +83,7 @@ export default function ManageOrders() {
       {notice && <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{notice}</p>}
 
       <div className="mt-6 space-y-4">
-        {status === "loading" && Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-44 animate-pulse rounded-3xl bg-slate-100" />)}
+        {status === "loading" && Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-44 animate-pulse rounded-3xl bg-surface" />)}
 
         {status === "error" && (
           <Card className="grid place-items-center px-6 py-14 text-center">
@@ -97,7 +97,7 @@ export default function ManageOrders() {
           <Card className="grid place-items-center px-6 py-14 text-center">
             <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-600"><UtensilsCrossed size={24} /></span>
             <p className="mt-4 font-bold text-ink-900">{scope === "active" ? "No active orders" : "No past orders yet"}</p>
-            <p className="mt-1 text-sm text-slate-500">New orders will show up here automatically.</p>
+            <p className="mt-1 text-sm text-ink-700">New orders will show up here automatically.</p>
           </Card>
         )}
 
@@ -109,14 +109,14 @@ export default function ManageOrders() {
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
                     <p className="text-lg font-extrabold text-ink-900">{o.orderNumber}</p>
-                    <p className="mt-0.5 flex items-center gap-1.5 text-sm text-slate-500">
+                    <p className="mt-0.5 flex items-center gap-1.5 text-sm text-ink-700">
                       <Clock size={14} /> {formatDateTime(o.createdAt, business.timezone)} · Takeaway
                     </p>
                   </div>
                   <Badge tone={st.tone}>{st.label}</Badge>
                 </div>
 
-                <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1.5 text-sm text-slate-600">
+                <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1.5 text-sm text-ink-700">
                   <span className="flex items-center gap-2"><User size={15} /> {o.customerName}</span>
                   <a href={`tel:${o.phone.replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-brand-600">
                     <Phone size={15} /> {o.phone}
@@ -126,7 +126,7 @@ export default function ManageOrders() {
                 <ul className="mt-4 space-y-1.5 text-sm">
                   {o.items.map((i) => (
                     <li key={i.name} className="flex justify-between gap-3">
-                      <span className="text-slate-700">
+                      <span className="text-ink-800">
                         <b className="text-ink-900">{i.quantity} ×</b> {i.name}
                       </span>
                       <span className="font-semibold text-ink-900">{formatPrice(i.lineTotalMinor, o.currency)}</span>

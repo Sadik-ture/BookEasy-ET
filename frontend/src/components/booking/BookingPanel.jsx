@@ -61,7 +61,7 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
 
   if (services.length === 0) {
     return (
-      <Card className="p-6 text-center text-sm text-slate-500">
+      <Card className="p-6 text-center text-sm text-ink-700">
         Booking isn't available yet for this business.
       </Card>
     );
@@ -112,27 +112,27 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
         <h3 className="mt-5 text-xl font-extrabold text-ink-900">
           {confirmed ? "Booking confirmed!" : "Request sent!"}
         </h3>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-ink-700">
           {confirmed
             ? "Your appointment is confirmed. See you there."
             : "The business will confirm your appointment shortly."}
         </p>
 
-        <dl className="mt-6 space-y-3 rounded-2xl bg-slate-50 p-4 text-left text-sm">
+        <dl className="mt-6 space-y-3 rounded-2xl bg-brand-50 p-4 text-left text-sm">
           <div className="flex justify-between gap-4">
-            <dt className="text-slate-500">Service</dt>
+            <dt className="text-ink-700">Service</dt>
             <dd className="font-bold text-ink-900">{booked.serviceName}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-slate-500">With</dt>
+            <dt className="text-ink-700">With</dt>
             <dd className="font-bold text-ink-900">{booked.staffName}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-slate-500">When</dt>
+            <dt className="text-ink-700">When</dt>
             <dd className="text-right font-bold text-ink-900">{formatDateTime(booked.startAt, business.timezone)}</dd>
           </div>
           <div className="flex justify-between gap-4">
-            <dt className="text-slate-500">Price</dt>
+            <dt className="text-ink-700">Price</dt>
             <dd className="font-bold text-ink-900">{formatPrice(booked.priceMinor, booked.currency)}</dd>
           </div>
         </dl>
@@ -161,7 +161,7 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
         <select
           value={serviceId}
           onChange={(e) => onServiceChange(e.target.value)}
-          className="h-12 w-full cursor-pointer rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+          className="h-12 w-full cursor-pointer rounded-2xl border border-line bg-surface px-4 text-sm outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
         >
           {services.map((s) => (
             <option key={s.id} value={s.id}>
@@ -180,8 +180,8 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
             className={cn(
               "flex items-center gap-2 rounded-full px-3.5 py-2 text-sm font-semibold ring-1 transition",
               staffId === ""
-                ? "bg-brand-600 text-white ring-brand-600"
-                : "bg-white text-slate-700 ring-slate-200 hover:bg-brand-50"
+                ? "bg-brand-400 text-[#1a140c] ring-brand-600"
+                : "bg-surface text-ink-800 ring-line hover:bg-brand-50"
             )}
           >
             <Users size={15} /> Any
@@ -193,14 +193,14 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
               className={cn(
                 "flex items-center gap-2 rounded-full py-1.5 pl-1.5 pr-3.5 text-sm font-semibold ring-1 transition",
                 staffId === s.id
-                  ? "bg-brand-600 text-white ring-brand-600"
-                  : "bg-white text-slate-700 ring-slate-200 hover:bg-brand-50"
+                  ? "bg-brand-400 text-[#1a140c] ring-brand-600"
+                  : "bg-surface text-ink-800 ring-line hover:bg-brand-50"
               )}
             >
               <span
                 className={cn(
                   "grid h-7 w-7 place-items-center rounded-full text-xs font-bold",
-                  staffId === s.id ? "bg-white/20 text-white" : "bg-brand-100 text-brand-700"
+                  staffId === s.id ? "bg-[#1a140c]/15 text-[#1a140c]" : "bg-brand-100 text-brand-400"
                 )}
               >
                 {s.name.charAt(0)}
@@ -222,15 +222,15 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
               className={cn(
                 "flex w-16 shrink-0 flex-col items-center rounded-2xl px-2 py-3 ring-1 transition",
                 date === d.date
-                  ? "bg-brand-600 text-white shadow-glow ring-brand-600"
-                  : "bg-white text-slate-700 ring-slate-200 hover:bg-brand-50"
+                  ? "bg-brand-400 text-[#1a140c] shadow-glow ring-brand-600"
+                  : "bg-surface text-ink-800 ring-line hover:bg-brand-50"
               )}
             >
-              <span className={cn("text-xs font-semibold", date === d.date ? "text-white/80" : "text-slate-400")}>
+              <span className={cn("text-xs font-semibold", date === d.date ? "text-[#1a140c]/70" : "text-ink-700")}>
                 {d.isToday ? "Today" : d.weekday}
               </span>
               <span className="mt-0.5 text-xl font-extrabold">{d.day}</span>
-              <span className={cn("text-xs", date === d.date ? "text-white/80" : "text-slate-400")}>{d.month}</span>
+              <span className={cn("text-xs", date === d.date ? "text-[#1a140c]/70" : "text-ink-700")}>{d.month}</span>
             </button>
           ))}
         </div>
@@ -243,7 +243,7 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
         {avail.status === "loading" && (
           <div className="grid grid-cols-3 gap-2">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-11 animate-pulse rounded-xl bg-slate-100" />
+              <div key={i} className="h-11 animate-pulse rounded-xl bg-surface" />
             ))}
           </div>
         )}
@@ -258,7 +258,7 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
         )}
 
         {avail.status === "ready" && avail.slots.length === 0 && (
-          <p className="rounded-xl bg-slate-50 px-4 py-4 text-center text-sm text-slate-500">
+          <p className="rounded-xl bg-brand-50 px-4 py-4 text-center text-sm text-ink-700">
             {avail.message || "No times available."} Try another date.
           </p>
         )}
@@ -272,8 +272,8 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
                 className={cn(
                   "h-11 rounded-xl text-sm font-semibold ring-1 transition",
                   time === s.time
-                    ? "bg-brand-600 text-white ring-brand-600"
-                    : "bg-white text-slate-700 ring-slate-200 hover:bg-brand-50 hover:text-brand-700"
+                    ? "bg-brand-400 text-[#1a140c] ring-brand-600"
+                    : "bg-surface text-ink-800 ring-line hover:bg-brand-50 hover:text-brand-700"
                 )}
               >
                 {formatClock(s.time)}
@@ -292,7 +292,7 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
           maxLength={300}
           rows={2}
           placeholder="Anything the business should know?"
-          className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+          className="w-full resize-none rounded-2xl border border-line bg-surface px-4 py-3 text-sm outline-none transition placeholder:text-ink-700 focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
         />
       </label>
 
@@ -300,14 +300,14 @@ export default function BookingPanel({ business, services, staff, serviceId, onS
       {service && selectedSlot && (
         <div className="mt-5 rounded-2xl bg-brand-50 p-4 text-sm">
           <p className="font-bold text-ink-900">{service.name}</p>
-          <p className="mt-0.5 text-slate-600">
+          <p className="mt-0.5 text-ink-700">
             {formatDateTime(selectedSlot.startAt, business.timezone)} · {formatDuration(service.durationMinutes)}
           </p>
           <p className="mt-2 flex justify-between font-extrabold text-ink-900">
             <span>Total</span>
             <span>{formatPrice(service.priceMinor)}</span>
           </p>
-          <p className="mt-1 text-xs text-slate-500">Pay at the business after your service.</p>
+          <p className="mt-1 text-xs text-ink-700">Pay at the business after your service.</p>
         </div>
       )}
 

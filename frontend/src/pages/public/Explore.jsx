@@ -9,6 +9,7 @@ import BusinessCard from "../../components/marketplace/BusinessCard";
 import useDebounce from "../../hooks/useDebounce";
 import { CATEGORY_KEYS, getCategory } from "../../utils/categories";
 import { fetchBusinesses, fetchCategories } from "../../services/marketplaceService";
+import Reveal from "../../components/motion/Reveal";
 
 const SORTS = [
   { value: "popular", label: "Popular" },
@@ -19,13 +20,13 @@ const PAGE_SIZE = 9;
 
 function CardSkeleton() {
   return (
-    <div className="overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-slate-900/5">
-      <div className="h-44 animate-pulse bg-slate-100" />
+    <div className="overflow-hidden rounded-3xl bg-surface shadow-soft ring-1 ring-slate-900/5">
+      <div className="h-44 animate-pulse bg-surface" />
       <div className="space-y-3 p-5">
-        <div className="h-5 w-2/3 animate-pulse rounded bg-slate-100" />
-        <div className="h-4 w-1/2 animate-pulse rounded bg-slate-100" />
-        <div className="h-4 w-1/3 animate-pulse rounded bg-slate-100" />
-        <div className="h-11 animate-pulse rounded-xl bg-slate-100" />
+        <div className="h-5 w-2/3 animate-pulse rounded bg-surface" />
+        <div className="h-4 w-1/2 animate-pulse rounded bg-surface" />
+        <div className="h-4 w-1/3 animate-pulse rounded bg-surface" />
+        <div className="h-11 animate-pulse rounded-xl bg-surface" />
       </div>
     </div>
   );
@@ -38,7 +39,7 @@ function Message({ icon: Icon, title, text, action }) {
         <Icon size={28} />
       </span>
       <h3 className="mt-5 text-lg font-extrabold text-ink-900">{title}</h3>
-      <p className="mt-1 max-w-sm text-sm text-slate-500">{text}</p>
+      <p className="mt-1 max-w-sm text-sm text-ink-700">{text}</p>
       {action}
     </Card>
   );
@@ -122,26 +123,26 @@ export default function Explore() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-      <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">
-        {activeCategory ? activeCategory.label : "Explore Businesses"}
+      <h1 className="font-display text-5xl text-brand-400">
+        {activeCategory ? activeCategory.label : "Explore"}
       </h1>
-      <p className="mt-1 text-sm text-slate-500">Find the best services near you</p>
+      <p className="mt-2 text-sm text-ink-700">Barbers, salons, and restaurants near you.</p>
 
       {/* Toolbar */}
       <div className="mt-6 flex flex-col gap-3 sm:flex-row">
         <div className="relative flex-1">
-          <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-ink-700" />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search by name, service or area…"
-            className="h-12 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-11 text-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+            className="h-12 w-full rounded-2xl border border-line bg-surface pl-11 pr-11 text-sm outline-none transition placeholder:text-ink-700 focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
           />
           {q && (
             <button
               onClick={() => setQ("")}
               aria-label="Clear search"
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-slate-400 hover:text-slate-600"
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-lg p-1.5 text-ink-700 hover:text-ink-700"
             >
               <X size={16} />
             </button>
@@ -153,7 +154,7 @@ export default function Explore() {
           onChange={(e) => updateParams({ city: e.target.value })}
           placeholder="Area or city"
           aria-label="Filter by area or city"
-          className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 sm:w-44"
+          className="h-12 w-full rounded-2xl border border-line bg-surface px-4 text-sm outline-none transition placeholder:text-ink-700 focus:border-brand-500 focus:ring-4 focus:ring-brand-100 sm:w-44"
         />
 
         <div className="relative">
@@ -161,7 +162,7 @@ export default function Explore() {
             value={sort}
             onChange={(e) => updateParams({ sort: e.target.value === "popular" ? "" : e.target.value })}
             aria-label="Sort businesses"
-            className="h-12 w-full cursor-pointer appearance-none rounded-2xl border border-slate-200 bg-white pl-4 pr-10 text-sm font-semibold text-ink-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100 sm:w-auto"
+            className="h-12 w-full cursor-pointer appearance-none rounded-2xl border border-line bg-surface pl-4 pr-10 text-sm font-semibold text-ink-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100 sm:w-auto"
           >
             {SORTS.map((s) => (
               <option key={s.value} value={s.value}>
@@ -169,7 +170,7 @@ export default function Explore() {
               </option>
             ))}
           </select>
-          <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-500" />
+          <ChevronDown size={16} className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-ink-700" />
         </div>
       </div>
 
@@ -185,7 +186,7 @@ export default function Explore() {
 
         <section>
           <div className="mb-5 flex min-h-6 items-center justify-between">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-ink-700">
               {meta ? `${meta.total} ${meta.total === 1 ? "business" : "businesses"} found` : "Loading…"}
             </p>
             {hasFilters && (
@@ -233,11 +234,11 @@ export default function Explore() {
 
           {status === "ready" && items.length > 0 && (
             <>
-              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+              <Reveal className="stagger grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                 {items.map((b) => (
                   <BusinessCard key={b.id} business={b} />
                 ))}
-              </div>
+              </Reveal>
               <Pagination page={meta.page} totalPages={meta.totalPages} onChange={goToPage} />
             </>
           )}

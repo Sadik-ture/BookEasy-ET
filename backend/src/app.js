@@ -11,6 +11,7 @@ import menuRoutes from "./modules/menu/menu.routes.js";
 import orderRoutes from "./modules/orders/order.routes.js";
 import manageRoutes from "./modules/manage/manage.routes.js";
 import meRoutes from "./modules/users/me.routes.js";
+import tableRoutes from "./modules/tables/tables.routes.js";
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use("/api/v1/me", meRoutes);
 app.use("/api/v1/manage", manageRoutes);
 app.use("/api/v1/bookings", bookingRoutes);
 app.use("/api/v1/orders", orderRoutes);
+app.use("/api/v1/tables", tableRoutes);
 app.use("/api/v1/businesses", catalogRoutes);
 app.use("/api/v1/businesses", menuRoutes);
 app.use("/api/v1", marketplaceRoutes);

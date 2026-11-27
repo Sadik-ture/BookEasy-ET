@@ -86,23 +86,23 @@ export default function ManageBookings() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">Bookings</h1>
-      <p className="mt-1 text-slate-500">Confirm requests and keep track of appointments.</p>
+      <h1 className="font-display text-4xl font-medium tracking-tight text-ink-900">Bookings</h1>
+      <p className="mt-1 text-ink-700">Confirm requests and keep track of appointments.</p>
 
       <Card className="mt-6 flex items-center justify-between gap-4 p-5">
         <div>
           <p className="font-bold text-ink-900">Confirm bookings automatically</p>
-          <p className="text-sm text-slate-500">New bookings are confirmed instantly. Otherwise you approve each one.</p>
+          <p className="text-sm text-ink-700">New bookings are confirmed instantly. Otherwise you approve each one.</p>
         </div>
         <Switch checked={business.autoConfirm} onChange={toggleAuto} disabled={savingAuto} label="Confirm bookings automatically" />
       </Card>
 
-      <div className="mt-6 inline-flex flex-wrap rounded-2xl bg-slate-100 p-1">
+      <div className="mt-6 inline-flex flex-wrap rounded-2xl bg-surface p-1">
         {TABS.map((t) => (
           <button
             key={t.key}
             onClick={() => setScope(t.key)}
-            className={cn("rounded-xl px-5 py-2 text-sm font-bold transition", scope === t.key ? "bg-white text-brand-700 shadow-sm" : "text-slate-500 hover:text-ink-900")}
+            className={cn("rounded-xl px-5 py-2 text-sm font-bold transition", scope === t.key ? "bg-surface text-brand-700 shadow-sm" : "text-ink-700 hover:text-ink-900")}
           >
             {t.label}
           </button>
@@ -112,7 +112,7 @@ export default function ManageBookings() {
       {notice && <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{notice}</p>}
 
       <div className="mt-6 space-y-4">
-        {status === "loading" && Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-36 animate-pulse rounded-3xl bg-slate-100" />)}
+        {status === "loading" && Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-36 animate-pulse rounded-3xl bg-surface" />)}
 
         {status === "error" && (
           <Card className="grid place-items-center px-6 py-14 text-center">
@@ -126,7 +126,7 @@ export default function ManageBookings() {
           <Card className="grid place-items-center px-6 py-14 text-center">
             <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-600"><CalendarDays size={24} /></span>
             <p className="mt-4 font-bold text-ink-900">Nothing here</p>
-            <p className="mt-1 text-sm text-slate-500">Bookings in this list will appear here.</p>
+            <p className="mt-1 text-sm text-ink-700">Bookings in this list will appear here.</p>
           </Card>
         )}
 
@@ -138,26 +138,26 @@ export default function ManageBookings() {
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
                     <p className="text-lg font-extrabold text-ink-900">{b.serviceName}</p>
-                    <p className="mt-0.5 flex items-center gap-1.5 text-sm text-slate-500">
+                    <p className="mt-0.5 flex items-center gap-1.5 text-sm text-ink-700">
                       <Clock size={14} /> {formatDateTime(b.startAt, business.timezone)} · {formatDuration(b.durationMinutes)}
                     </p>
                   </div>
                   <Badge tone={st.tone}>{st.label}</Badge>
                 </div>
 
-                <div className="mt-3 grid gap-x-6 gap-y-1.5 text-sm text-slate-600 sm:grid-cols-2">
+                <div className="mt-3 grid gap-x-6 gap-y-1.5 text-sm text-ink-700 sm:grid-cols-2">
                   <span className="flex items-center gap-2"><User size={15} /> {b.customer?.name || "Customer"}</span>
                   {b.customer?.phone ? (
                     <a href={`tel:${b.customer.phone.replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-brand-600">
                       <Phone size={15} /> {b.customer.phone}
                     </a>
                   ) : (
-                    <span className="text-slate-400">No phone number</span>
+                    <span className="text-ink-700">No phone number</span>
                   )}
                   <span>With {b.staffName}</span>
                   <span className="font-bold text-ink-900">{formatPrice(b.priceMinor, b.currency)}</span>
                 </div>
-                {b.customerNotes && <p className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-sm text-slate-600">Note: {b.customerNotes}</p>}
+                {b.customerNotes && <p className="mt-3 rounded-xl bg-brand-50 px-3 py-2 text-sm text-ink-700">Note: {b.customerNotes}</p>}
 
                 {ACTIONS[b.status] && (
                   <div className="mt-4 flex flex-wrap gap-2 border-t border-slate-100 pt-4">

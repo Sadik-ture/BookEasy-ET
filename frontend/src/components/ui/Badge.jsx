@@ -6,7 +6,7 @@ const tones = {
   warning: "bg-amber-50 text-amber-700 ring-amber-200",
   danger: "bg-rose-50 text-rose-700 ring-rose-200",
   info: "bg-sky-50 text-sky-700 ring-sky-200",
-  neutral: "bg-slate-100 text-slate-600 ring-slate-200",
+  neutral: "bg-surface text-ink-700 ring-line",
 };
 
 export default function Badge({ tone = "brand", className = "", children }) {

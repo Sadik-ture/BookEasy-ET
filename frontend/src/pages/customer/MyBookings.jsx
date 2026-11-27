@@ -72,17 +72,17 @@ export default function MyBookings() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">My Bookings</h1>
-      <p className="mt-1 text-slate-500">Your appointments at barbershops and salons.</p>
+      <h1 className="font-display text-4xl font-medium tracking-tight text-ink-900">My Bookings</h1>
+      <p className="mt-1 text-ink-700">Your appointments at barbershops and salons.</p>
 
-      <div className="mt-6 inline-flex rounded-2xl bg-slate-100 p-1">
+      <div className="mt-6 inline-flex rounded-2xl bg-surface p-1">
         {["upcoming", "past"].map((s) => (
           <button
             key={s}
             onClick={() => setScope(s)}
             className={cn(
               "rounded-xl px-5 py-2 text-sm font-bold capitalize transition",
-              scope === s ? "bg-white text-brand-700 shadow-sm" : "text-slate-500 hover:text-ink-900"
+              scope === s ? "bg-surface text-brand-700 shadow-sm" : "text-ink-700 hover:text-ink-900"
             )}
           >
             {s}
@@ -103,7 +103,7 @@ export default function MyBookings() {
 
       <div className="mt-6 space-y-4">
         {status === "loading" &&
-          Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-32 animate-pulse rounded-3xl bg-slate-100" />)}
+          Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-32 animate-pulse rounded-3xl bg-surface" />)}
 
         {status === "error" && (
           <Card className="grid place-items-center px-6 py-14 text-center">
@@ -125,7 +125,7 @@ export default function MyBookings() {
             <p className="mt-4 font-bold text-ink-900">
               {scope === "upcoming" ? "No upcoming bookings" : "No past bookings yet"}
             </p>
-            <p className="mt-1 max-w-xs text-sm text-slate-500">
+            <p className="mt-1 max-w-xs text-sm text-ink-700">
               {scope === "upcoming"
                 ? "Book a barber or salon and your appointment will appear here."
                 : "Completed and cancelled appointments will show up here."}
@@ -165,7 +165,7 @@ export default function MyBookings() {
                       <Badge tone={st.tone}>{st.label}</Badge>
                     </div>
 
-                    <div className="mt-3 grid gap-x-6 gap-y-1.5 text-sm text-slate-600 sm:grid-cols-2">
+                    <div className="mt-3 grid gap-x-6 gap-y-1.5 text-sm text-ink-700 sm:grid-cols-2">
                       <span className="flex items-center gap-2">
                         <Clock size={15} className="shrink-0" /> {formatDateTime(b.startAt, tz)}
                       </span>

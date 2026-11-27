@@ -5,7 +5,7 @@ import Card from "../../components/ui/Card";
 import { parseApiError } from "../../utils/apiError";
 import { formatPrice } from "../../utils/format";
 
-const field = "h-11 w-full rounded-xl border border-slate-200 px-3 text-sm";
+const field = "h-11 w-full rounded-xl border border-line px-3 text-sm";
 
 export default function MenuManage() {
   const [categories, setCategories] = useState([]);
@@ -75,7 +75,7 @@ export default function MenuManage() {
           <Card key={row._id} className="flex flex-wrap items-center justify-between gap-3 p-4">
             <div>
               <p className="font-bold">{row.name}</p>
-              <p className="text-sm text-slate-500">{formatPrice(row.priceMinor)} · {row.available ? "Available" : "Hidden"}</p>
+              <p className="text-sm text-ink-700">{formatPrice(row.priceMinor)} · {row.available ? "Available" : "Hidden"}</p>
             </div>
             <div className="flex items-center gap-2">
               <input type="file" accept="image/png,image/jpeg,image/webp" onChange={upload(row._id)} className="text-xs" />

@@ -57,13 +57,13 @@ export default function TableOrder() {
     }
   };
 
-  if (error && !data) return <p className="px-4 py-16 text-center text-slate-600">{error}</p>;
-  if (!data) return <div className="mx-auto mt-10 h-40 max-w-lg animate-pulse rounded-3xl bg-slate-100" />;
+  if (error && !data) return <p className="px-4 py-16 text-center text-ink-700">{error}</p>;
+  if (!data) return <div className="mx-auto mt-10 h-40 max-w-lg animate-pulse rounded-3xl bg-surface" />;
   if (done) {
     return (
       <Card className="mx-auto mt-10 max-w-lg p-6 text-center">
         <h1 className="text-2xl font-extrabold">Order sent to the kitchen</h1>
-        <p className="mt-2 text-sm text-slate-500">{done.orderNumber}. Pay at the table. This is not marked paid.</p>
+        <p className="mt-2 text-sm text-ink-700">{done.orderNumber}. Pay at the table. This is not marked paid.</p>
         <p className="mt-2 text-sm">{done.collectionNote}</p>
         <Button as={Link} to="/my-orders" className="mt-6">Track order</Button>
       </Card>
@@ -76,7 +76,7 @@ export default function TableOrder() {
     <div className="mx-auto max-w-3xl px-4 py-8">
       <p className="text-sm font-bold text-brand-600">Table {data.table.label}</p>
       <h1 className="text-3xl font-extrabold">{data.business.name}</h1>
-      <p className="mt-1 text-sm text-slate-500">You need a connection to send this order. It is not saved offline.</p>
+      <p className="mt-1 text-sm text-ink-700">You need a connection to send this order. It is not saved offline.</p>
       {error && <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>}
       <div className="mt-6 space-y-6">
         {data.categories.map((c) => (
@@ -87,7 +87,7 @@ export default function TableOrder() {
                 <Card key={item.id} className="flex items-center justify-between p-4">
                   <div>
                     <p className="font-bold">{item.name}</p>
-                    <p className="text-sm text-slate-500">{formatPrice(item.priceMinor)}</p>
+                    <p className="text-sm text-ink-700">{formatPrice(item.priceMinor)}</p>
                   </div>
                   <Button size="sm" variant="soft" onClick={() => add(item)}>Add</Button>
                 </Card>

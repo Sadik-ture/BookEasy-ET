@@ -5,7 +5,7 @@ import Card from "../../components/ui/Card";
 import { parseApiError } from "../../utils/apiError";
 import { formatPrice } from "../../utils/format";
 
-const field = "h-11 w-full rounded-xl border border-slate-200 px-3 text-sm";
+const field = "h-11 w-full rounded-xl border border-line px-3 text-sm";
 
 export default function ServicesPage() {
   const [items, setItems] = useState([]);
@@ -40,13 +40,13 @@ export default function ServicesPage() {
         <input className={field} type="number" min="5" placeholder="Minutes" value={form.durationMinutes} onChange={(e) => setForm({ ...form, durationMinutes: e.target.value })} />
         <Button type="submit" className="sm:col-span-2">Add service</Button>
       </form>
-      <p className="mt-2 text-xs text-slate-500">Price is in minor units. 15000 = ETB 150.</p>
+      <p className="mt-2 text-xs text-ink-700">Price is in minor units. 15000 = ETB 150.</p>
       <div className="mt-6 space-y-3">
         {items.map((item) => (
           <Card key={item._id} className="flex items-center justify-between p-4">
             <div>
               <p className="font-bold">{item.name}</p>
-              <p className="text-sm text-slate-500">{formatPrice(item.priceMinor)} · {item.durationMinutes} min</p>
+              <p className="text-sm text-ink-700">{formatPrice(item.priceMinor)} · {item.durationMinutes} min</p>
             </div>
             <Button size="sm" variant="outline" onClick={() => toggle(item)}>{item.active ? "Pause" : "Activate"}</Button>
           </Card>

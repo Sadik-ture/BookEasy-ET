@@ -4,7 +4,7 @@ import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import { parseApiError } from "../../utils/apiError";
 
-const field = "h-11 w-full rounded-xl border border-slate-200 px-3 text-sm";
+const field = "h-11 w-full rounded-xl border border-line px-3 text-sm";
 
 export default function TeamPage() {
   const [items, setItems] = useState([]);
@@ -47,7 +47,7 @@ export default function TeamPage() {
           <Card key={m.id} className="flex items-center justify-between p-4">
             <div>
               <p className="font-bold">{m.user?.fullName}</p>
-              <p className="text-sm text-slate-500">{m.user?.email} · {m.role} · {m.status}</p>
+              <p className="text-sm text-ink-700">{m.user?.email} · {m.role} · {m.status}</p>
             </div>
             {m.role !== "owner" && m.status === "active" && (
               <Button size="sm" variant="outline" onClick={() => api.patch(`/workspace/team/${m.id}`, { status: "removed" }).then(load)}>Remove</Button>

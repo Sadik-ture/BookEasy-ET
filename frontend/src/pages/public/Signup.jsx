@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Mail, Lock, User, Phone } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { parseApiError } from "../../utils/apiError";
@@ -9,14 +9,16 @@ import Button from "../../components/ui/Button";
 
 export default function Signup() {
   const { user, loading, register } = useAuth();
-  const navigate = useNavigate();
+   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectTo = location.state?.from || "/dashboard";
 
   const [form, setForm] = useState({ fullName: "", email: "", phone: "", password: "" });
   const [error, setError] = useState("");
   const [fields, setFields] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  if (!loading && user) return <Navigate to="/dashboard" replace />;
+ if (!loading && user) return <Navigate to={redirectTo} replace />;
 
   const update = (key) => (e) => setForm({ ...form, [key]: e.target.value });
 
@@ -27,7 +29,7 @@ export default function Signup() {
     setSubmitting(true);
     try {
       await register(form);
-      navigate("/dashboard", { replace: true });
+     navigate(redirectTo, { replace: true });
     } catch (err) {
       const parsed = parseApiError(err);
       setError(parsed.message);

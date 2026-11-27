@@ -84,3 +84,19 @@ export const updateStaffSchema = z
     active: z.boolean().optional(),
   })
   .refine(notEmpty, "Nothing to update");
+
+
+  
+export const createTablesSchema = z.object({
+  count: z.coerce
+    .number()
+    .int("Use a whole number")
+    .min(1, "Add at least 1 table")
+    .max(50, "You can add up to 50 at a time"),
+});
+export const updateTableSchema = z
+  .object({
+    label: z.string().trim().min(1, "Enter a name").max(30, "Name is too long").optional(),
+    active: z.boolean().optional(),
+  })
+  .refine(notEmpty, "Nothing to update");

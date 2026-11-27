@@ -2,34 +2,39 @@
 
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, serif;
 
-  --color-brand-50: #f6f3ff;
-  --color-brand-100: #ede8ff;
-  --color-brand-200: #ddd3ff;
-  --color-brand-300: #c3b0ff;
-  --color-brand-400: #a283ff;
-  --color-brand-500: #8458fa;
-  --color-brand-600: #6d3df0;
-  --color-brand-700: #5b2ed6;
-  --color-brand-800: #4a27ad;
-  --color-brand-900: #3b2388;
+  --color-paper: #0c0c0e;
+  --color-surface: #141416;
+  --color-line: #3a3224;
 
-  --color-ink-700: #2b2554;
-  --color-ink-800: #1d1941;
-  --color-ink-900: #14112e;
-  --color-ink-950: #0d0b20;
+  --color-brand-50: #2a2316;
+  --color-brand-100: #3d3422;
+  --color-brand-200: #6b5428;
+  --color-brand-300: #a6843d;
+  --color-brand-400: #e0c17a;
+  --color-brand-500: #c6a15b;
+  --color-brand-600: #a6843d;
+  --color-brand-700: #e8d7a8;
+  --color-brand-800: #f3e6c0;
+  --color-brand-900: #faf3e3;
 
-  --color-accent-400: #ffb25e;
-  --color-accent-500: #ff9a3d;
-  --color-accent-600: #f2800f;
+  --color-ink-700: #b3a690;
+  --color-ink-800: #e4d9c4;
+  --color-ink-900: #f4efe4;
+  --color-ink-950: #0a0908;
 
-  --shadow-soft: 0 1px 2px rgb(20 17 46 / 0.04), 0 10px 30px -12px rgb(20 17 46 / 0.12);
-  --shadow-glow: 0 12px 28px -10px rgb(109 61 240 / 0.6);
+  --color-accent-400: #e0c17a;
+  --color-accent-500: #c6a15b;
+  --color-accent-600: #a6843d;
+
+  --shadow-soft: 0 1px 0 rgb(224 193 122 / 0.06), 0 18px 40px -28px rgb(0 0 0 / 0.7);
+  --shadow-glow: 0 0 0 1px rgb(224 193 122 / 0.35);
 
   --animate-float: float 6s ease-in-out infinite;
   @keyframes float {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-8px); }
   }
 }
 
@@ -38,11 +43,150 @@ html {
 }
 
 body {
-  background-color: #f3f0fb;
-  color: #14112e;
+  background-color: var(--color-paper);
+  color: var(--color-ink-900);
   -webkit-font-smoothing: antialiased;
 }
 
+/* Leftover glass classes stay readable on the paper canvas. */
+.glass {
+  background-color: var(--color-surface);
+  color: var(--color-ink-900);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-soft);
+}
+
 ::selection {
-  background: #ddd3ff;
+  background: #a6843d;
+  color: #0a0908;
+}
+
+:root {
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-press: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.12); }
+  70% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+@keyframes tick {
+  from { transform: translateY(3px); }
+  to { transform: none; }
+}
+
+.page-in {
+  animation: rise-in 0.32s var(--ease-out) both;
+}
+
+.fade-in {
+  animation: fade-in 0.22s var(--ease-out) both;
+}
+
+.reveal:not(.stagger) {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.reveal:not(.stagger).is-in {
+  animation: rise-in 0.48s var(--ease-out) both;
+}
+
+.stagger > * {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.stagger.is-in > * {
+  animation: rise-in 0.46s var(--ease-out) both;
+}
+
+.stagger.is-in > *:nth-child(1) { animation-delay: 0ms; }
+.stagger.is-in > *:nth-child(2) { animation-delay: 32ms; }
+.stagger.is-in > *:nth-child(3) { animation-delay: 64ms; }
+.stagger.is-in > *:nth-child(4) { animation-delay: 96ms; }
+.stagger.is-in > *:nth-child(5) { animation-delay: 128ms; }
+.stagger.is-in > *:nth-child(6) { animation-delay: 160ms; }
+.stagger.is-in > *:nth-child(7) { animation-delay: 192ms; }
+.stagger.is-in > *:nth-child(8) { animation-delay: 224ms; }
+.stagger.is-in > *:nth-child(9) { animation-delay: 256ms; }
+
+.heart-pop { animation: pop 0.42s var(--ease-out); }
+.qty-tick { display: inline-block; animation: tick 0.26s var(--ease-out); }
+.cart-line { animation: rise-in 0.26s var(--ease-out) both; }
+.check-pop { animation: pop 0.48s var(--ease-out); }
+.menu-panel { animation: rise-in 0.24s var(--ease-out) both; transform-origin: top; }
+
+.motion-card img {
+  transition: transform 0.65s var(--ease-out);
+}
+.motion-card {
+  transition: box-shadow 0.4s var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .motion-card:hover {
+    box-shadow: 0 0 0 1px rgb(224 193 122 / 0.55);
+  }
+  .motion-card:hover img {
+    transform: scale(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-float,
+  .animate-spin,
+  .page-in,
+  .reveal,
+  .reveal.is-in,
+  .stagger > *,
+  .stagger.is-in > *,
+  .heart-pop,
+  .qty-tick,
+  .cart-line,
+  .check-pop,
+  .menu-panel,
+  .fade-in {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .motion-card,
+  .motion-card img {
+    transition: none;
+  }
+}
+
+
+
+/* Printing the table QR sheet */
+@page {
+  margin: 12mm;
+}
+.print-root {
+  display: none;
+}
+@media print {
+  body > *:not(.print-root) {
+    display: none !important;
+  }
+  .print-root {
+    display: block;
+    background: white;
+    color: black;
+  }
 }

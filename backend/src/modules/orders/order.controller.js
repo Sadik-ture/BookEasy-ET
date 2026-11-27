@@ -1,14 +1,11 @@
 import crypto from "node:crypto";
 import Business from "../businesses/business.model.js";
 import MenuItem from "../menu/menuItem.model.js";
+import Table from "../tables/table.model.js";
 import Order from "./order.model.js";
-import RestaurantTable from "../tables/table.model.js";
 import asyncHandler from "../../utils/asyncHandler.js";
 import { isOpenNow } from "../../utils/openNow.js";
 import { ACTIVE_ORDER_STATUSES, MAX_QTY_PER_ITEM } from "./order.constants.js";
-import { lineTotalMinor, sumMinor } from "../../utils/money.js";
-import { WELCOME_CODE, discountForCode } from "../../utils/promo.js";
-import { notifyUser, notifyBusiness } from "../notifications/notify.js";
 
 const fail = (res, status, code, message, fields) =>
   res.status(status).json({
@@ -28,30 +25,19 @@ const view = (o, business) => ({
   id: o._id,
   orderNumber: o.orderNumber,
   type: o.type,
+  tableLabel: o.tableLabel || "",
   status: o.status,
   items: o.items.map((i) => ({
-    menuItemId: i.menuItemId,
     name: i.name,
     quantity: i.quantity,
     priceMinor: i.priceMinor,
     lineTotalMinor: i.lineTotalMinor,
   })),
-  subtotalMinor: o.subtotalMinor,
-  discountMinor: o.discountMinor || 0,
-  promoCode: o.promoCode || "",
   totalMinor: o.totalMinor,
   currency: o.currency,
   phone: o.phone,
   notes: o.notes,
   createdAt: o.createdAt,
-  tableLabel: o.tableLabel || "",
-  estimatedReadyAt: o.estimatedReadyAt || null,
-  collectionNote:
-    o.type === "dine_in"
-      ? `This order is for table ${o.tableLabel || ""}. Pay at the table when it is served.`
-      : o.status === "ready"
-        ? "Your order is ready to collect at the restaurant."
-        : "",
   business: business
     ? {
         id: business._id,
@@ -65,21 +51,10 @@ const view = (o, business) => ({
 
 // POST /api/v1/orders
 export const createOrder = asyncHandler(async (req, res) => {
-  const { businessId, items, phone, notes, clientRequestId, type = "takeaway", qrToken, promoCode } = req.body;
-
-  let table = null;
-  if (type === "dine_in") {
-    table = await RestaurantTable.findOne({ qrToken, active: true });
-    if (!table || String(table.businessId) !== String(businessId)) {
-      return fail(res, 404, "NOT_FOUND", "That table is not active. Scan the QR code on your table.");
-    }
-  }
+  const { businessId, items, phone, notes, clientRequestId, tableCode } = req.body;
 
   const business = await Business.findOne({ _id: businessId, status: "approved", category: "restaurant" });
   if (!business) return fail(res, 404, "NOT_FOUND", "Restaurant not found.");
-  if (business.acceptingRequests === false) {
-    return fail(res, 409, "NOT_ACCEPTING", `${business.name} is not taking orders right now.`);
-  }
 
   // Same request sent twice: return the order that already exists
   if (clientRequestId) {
@@ -89,6 +64,15 @@ export const createOrder = asyncHandler(async (req, res) => {
 
   if (isOpenNow(business.openingHours, business.timezone) === false) {
     return fail(res, 409, "RESTAURANT_CLOSED", `${business.name} is closed right now. Please try again when it opens.`);
+  }
+
+  // Dine-in: the table must belong to THIS restaurant and be active (tenant check)
+  let table = null;
+  if (tableCode) {
+    table = await Table.findOne({ code: tableCode, businessId: business._id, active: true }).lean();
+    if (!table) {
+      return fail(res, 409, "TABLE_INVALID", "This table's QR code isn't valid anymore. Please ask the staff for help.");
+    }
   }
 
   // Merge duplicate lines, then load the REAL items and prices from the database
@@ -114,24 +98,10 @@ export const createOrder = asyncHandler(async (req, res) => {
       name: m.name,
       priceMinor: m.priceMinor, // price comes from the database, never from the browser
       quantity,
-      lineTotalMinor: lineTotalMinor(m.priceMinor, quantity),
+      lineTotalMinor: m.priceMinor * quantity,
     };
   });
-  const subtotalMinor = sumMinor(lines);
-  const code = String(promoCode || "").trim().toUpperCase();
-  let discountMinor = 0;
-  if (code) {
-    const quote = discountForCode(code, subtotalMinor);
-    if (!quote) return fail(res, 400, "PROMO_INVALID", "That code is not valid.");
-    if (type === "dine_in") return fail(res, 400, "PROMO_INVALID", "BOOK10 applies to takeaway orders.");
-    const used = await Order.exists({
-      customerId: req.user._id,
-      promoCode: WELCOME_CODE,
-      status: { $nin: ["cancelled", "rejected"] },
-    });
-    if (used) return fail(res, 409, "PROMO_USED", "You have already used BOOK10.");
-    discountMinor = quote.discountMinor;
-  }
+  const subtotalMinor = lines.reduce((sum, l) => sum + l.lineTotalMinor, 0);
 
   let order = null;
   for (let attempt = 0; attempt < 5 && !order; attempt++) {
@@ -140,16 +110,14 @@ export const createOrder = asyncHandler(async (req, res) => {
         orderNumber: makeOrderNumber(),
         businessId: business._id,
         customerId: req.user._id,
-        type: type === "dine_in" ? "dine_in" : "takeaway",
+        type: table ? "dine_in" : "takeaway",
         tableId: table?._id,
         tableLabel: table?.label || "",
         items: lines,
         subtotalMinor,
-        discountMinor,
-        promoCode: discountMinor ? WELCOME_CODE : "",
-        totalMinor: subtotalMinor - discountMinor,
+        totalMinor: subtotalMinor,
         customerName: req.user.fullName,
-        phone: phone || req.user.phone || "At table",
+        phone,
         notes: notes || "",
         clientRequestId,
         statusHistory: [{ status: "pending", at: new Date() }],
@@ -165,21 +133,6 @@ export const createOrder = asyncHandler(async (req, res) => {
     }
   }
   if (!order) throw new Error("Could not generate a unique order number");
-
-  await notifyUser({
-    userId: req.user._id,
-    businessId: business._id,
-    type: "order",
-    title: "Order received",
-    body: `${business.name} has your order ${order.orderNumber}.`,
-    link: "/my-orders",
-  });
-  await notifyBusiness(business._id, "orders", {
-    type: "order",
-    title: "New order",
-    body: `${order.orderNumber} is waiting${table ? ` for table ${table.label}` : ""}.`,
-    link: "/workspace/orders",
-  });
 
   res.status(201).json({ success: true, data: { order: view(order, business) } });
 });

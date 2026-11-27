@@ -28,12 +28,12 @@ export default function Favorites() {
   return (
     <div className="mx-auto max-w-6xl">
       <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">Favorites</h1>
-      <p className="mt-1 text-slate-500">Places you want to come back to.</p>
+      <p className="mt-1 text-ink-700">Places you want to come back to.</p>
 
       {state.status === "loading" && (
         <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="h-72 animate-pulse rounded-3xl bg-slate-100" />
+            <div key={i} className="h-72 animate-pulse rounded-3xl bg-surface" />
           ))}
         </div>
       )}
@@ -51,7 +51,7 @@ export default function Favorites() {
             <Heart size={24} />
           </span>
           <p className="mt-4 font-bold text-ink-900">No saved places yet</p>
-          <p className="mt-1 max-w-xs text-sm text-slate-500">Tap the heart on a barbershop, salon, or restaurant.</p>
+          <p className="mt-1 max-w-xs text-sm text-ink-700">Tap the heart on a barbershop, salon, or restaurant.</p>
           <Button as={Link} to="/businesses" variant="soft" size="sm" className="mt-5">
             Explore
           </Button>

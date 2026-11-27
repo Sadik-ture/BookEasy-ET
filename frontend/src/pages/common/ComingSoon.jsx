@@ -8,8 +8,8 @@ export default function ComingSoon({ title, message = "This page is being built 
       <span className="grid h-16 w-16 place-items-center rounded-3xl bg-brand-50 text-brand-600">
         <Sparkles size={28} />
       </span>
-      <h1 className="mt-6 text-3xl font-extrabold tracking-tight text-ink-900">{title}</h1>
-      <p className="mt-2 text-slate-500">{message}</p>
+      <h1 className="mt-6 font-display text-4xl font-medium tracking-tight text-ink-900">{title}</h1>
+      <p className="mt-2 text-ink-700">{message}</p>
       <Button as={Link} to="/" variant="soft" className="mt-8">
         Back to home
       </Button>

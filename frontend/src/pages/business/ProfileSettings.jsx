@@ -5,7 +5,7 @@ import Card from "../../components/ui/Card";
 import { parseApiError } from "../../utils/apiError";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const field = "h-11 w-full rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-brand-500";
+const field = "h-11 w-full rounded-xl border border-line px-3 text-sm outline-none focus:border-brand-500";
 
 export default function ProfileSettings() {
   const [form, setForm] = useState(null);
@@ -29,7 +29,7 @@ export default function ProfileSettings() {
     });
   }, []);
 
-  if (!form) return <div className="h-40 animate-pulse rounded-3xl bg-slate-100" />;
+  if (!form) return <div className="h-40 animate-pulse rounded-3xl bg-surface" />;
 
   const save = async (e) => {
     e.preventDefault();

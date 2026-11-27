@@ -93,8 +93,8 @@ export default function ManageServices() {
     <div className="mx-auto max-w-4xl">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">Services</h1>
-          <p className="mt-1 text-slate-500">What customers can book. Hidden services can't be booked.</p>
+          <h1 className="font-display text-4xl font-medium tracking-tight text-ink-900">Services</h1>
+          <p className="mt-1 text-ink-700">What customers can book. Hidden services can't be booked.</p>
         </div>
         <Button onClick={() => setModal({})}>
           <Plus size={16} /> Add service
@@ -102,7 +102,7 @@ export default function ManageServices() {
       </div>
 
       <div className="mt-6 space-y-3">
-        {status === "loading" && Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-24 animate-pulse rounded-3xl bg-slate-100" />)}
+        {status === "loading" && Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-24 animate-pulse rounded-3xl bg-surface" />)}
 
         {status === "error" && (
           <Card className="grid place-items-center px-6 py-14 text-center">
@@ -116,23 +116,23 @@ export default function ManageServices() {
           <Card className="grid place-items-center px-6 py-14 text-center">
             <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-600"><Scissors size={24} /></span>
             <p className="mt-4 font-bold text-ink-900">No services yet</p>
-            <p className="mt-1 max-w-xs text-sm text-slate-500">Add your first service, for example "Haircut", so customers can book it.</p>
+            <p className="mt-1 max-w-xs text-sm text-ink-700">Add your first service, for example "Haircut", so customers can book it.</p>
           </Card>
         )}
 
         {status === "ready" &&
           items.map((s) => (
-            <Card key={s.id} className={cn("flex items-center gap-4 p-5", !s.active && "bg-slate-50")}>
+            <Card key={s.id} className={cn("flex items-center gap-4 p-5", !s.active && "bg-brand-50")}>
               <div className="min-w-0 flex-1">
-                <p className={cn("font-bold", s.active ? "text-ink-900" : "text-slate-400")}>{s.name}</p>
-                {s.description && <p className="truncate text-sm text-slate-500">{s.description}</p>}
-                <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-slate-500">
+                <p className={cn("font-bold", s.active ? "text-ink-900" : "text-ink-700")}>{s.name}</p>
+                {s.description && <p className="truncate text-sm text-ink-700">{s.description}</p>}
+                <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-ink-700">
                   <Clock size={13} /> {formatDuration(s.durationMinutes)}
                 </p>
               </div>
               <span className="font-extrabold text-ink-900">{formatPrice(s.priceMinor)}</span>
               <Switch checked={s.active} disabled={busyId === s.id} onChange={() => toggleActive(s)} label={`Show ${s.name}`} />
-              <button onClick={() => setModal({ item: s })} aria-label={`Edit ${s.name}`} className="rounded-xl p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-700">
+              <button onClick={() => setModal({ item: s })} aria-label={`Edit ${s.name}`} className="rounded-xl p-2 text-ink-700 hover:bg-surface hover:text-brand-700">
                 <Pencil size={17} />
               </button>
             </Card>

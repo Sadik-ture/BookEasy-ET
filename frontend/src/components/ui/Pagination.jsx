@@ -10,12 +10,12 @@ export default function Pagination({ page, totalPages, onChange }) {
   for (let i = start; i <= end; i++) pages.push(i);
 
   const base =
-    "grid h-10 min-w-10 place-items-center rounded-xl border px-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40";
+    "grid h-10 min-w-10 place-items-center rounded-xl border px-3 text-sm font-semibold transition-[background-color,color,border-color,transform] duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-40";
 
   return (
     <nav className="mt-10 flex items-center justify-center gap-2" aria-label="Pagination">
       <button
-        className={cn(base, "border-slate-200 bg-white text-slate-600 hover:bg-slate-50")}
+        className={cn(base, "border-line bg-surface text-ink-700 hover:bg-brand-50")}
         disabled={page <= 1}
         onClick={() => onChange(page - 1)}
         aria-label="Previous page"
@@ -31,8 +31,8 @@ export default function Pagination({ page, totalPages, onChange }) {
           className={cn(
             base,
             p === page
-              ? "border-brand-600 bg-brand-600 text-white shadow-glow"
-              : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+              ? "border-brand-600 bg-brand-400 text-[#1a140c] shadow-glow"
+              : "border-line bg-surface text-ink-700 hover:bg-brand-50"
           )}
         >
           {p}
@@ -40,7 +40,7 @@ export default function Pagination({ page, totalPages, onChange }) {
       ))}
 
       <button
-        className={cn(base, "border-slate-200 bg-white text-slate-600 hover:bg-slate-50")}
+        className={cn(base, "border-line bg-surface text-ink-700 hover:bg-brand-50")}
         disabled={page >= totalPages}
         onClick={() => onChange(page + 1)}
         aria-label="Next page"

@@ -56,8 +56,8 @@ export default function CreateBusiness() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">List your business</h1>
-      <p className="mt-1 text-slate-500">Create your page on BookEasy ET. It takes about a minute.</p>
+      <h1 className="font-display text-4xl font-medium tracking-tight text-ink-900">List your business</h1>
+      <p className="mt-1 text-ink-700">Create your page on BookEasy ET. It takes about a minute.</p>
 
       <form onSubmit={submit} className="mt-8 space-y-6">
         <Card className="p-6">
@@ -70,7 +70,7 @@ export default function CreateBusiness() {
                 onClick={() => setForm({ ...form, category: c.key })}
                 className={cn(
                   "flex flex-col items-center gap-2 rounded-2xl p-4 ring-1 transition",
-                  form.category === c.key ? "bg-brand-50 text-brand-700 ring-2 ring-brand-600" : "bg-white text-slate-700 ring-slate-200 hover:bg-brand-50/50"
+                  form.category === c.key ? "bg-brand-50 text-brand-700 ring-2 ring-brand-600" : "bg-surface text-ink-800 ring-line hover:bg-brand-50/50"
                 )}
               >
                 <c.icon size={26} />
@@ -109,7 +109,7 @@ export default function CreateBusiness() {
                   onClick={() => toggleDay(i)}
                   className={cn(
                     "flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold ring-1 transition",
-                    closed ? "bg-ink-900 text-white ring-ink-900" : "bg-white text-slate-700 ring-slate-200 hover:bg-brand-50"
+                    closed ? "bg-ink-950 text-brand-400 ring-brand-400/40" : "bg-surface text-ink-800 ring-line hover:bg-brand-50"
                   )}
                 >
                   {closed && <Check size={14} />} {d}

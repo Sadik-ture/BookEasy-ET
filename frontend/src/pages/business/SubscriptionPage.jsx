@@ -6,7 +6,7 @@ import { formatDateTime, formatPrice } from "../../utils/format";
 export default function SubscriptionPage() {
   const [data, setData] = useState(null);
   useEffect(() => { api.get("/workspace/subscription").then((res) => setData(res.data.data)); }, []);
-  if (!data) return <div className="h-40 animate-pulse rounded-3xl bg-slate-100" />;
+  if (!data) return <div className="h-40 animate-pulse rounded-3xl bg-surface" />;
   return (
     <div className="mx-auto max-w-xl">
       <h1 className="text-3xl font-extrabold">Subscription</h1>
@@ -18,7 +18,7 @@ export default function SubscriptionPage() {
         <p>Staff limit: {data.plan?.limits?.maxStaff}</p>
         <p>Menu items: {data.plan?.limits?.maxMenuItems}</p>
         <p>Tables: {data.plan?.limits?.maxTables}</p>
-        <p className="text-slate-500">Payment is collected manually during the pilot. A platform admin activates a paid plan.</p>
+        <p className="text-ink-700">Payment is collected manually during the pilot. A platform admin activates a paid plan.</p>
       </Card>
     </div>
   );

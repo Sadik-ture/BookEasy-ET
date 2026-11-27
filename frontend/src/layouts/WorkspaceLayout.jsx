@@ -56,7 +56,7 @@ export default function WorkspaceLayout() {
     localStorage.setItem("bookeasy_workspace", next);
   }, [memberships, activeId]);
 
-  if (loading || !memberships.length) return <div className="grid place-items-center py-32 text-slate-500">Loading…</div>;
+  if (loading || !memberships.length) return <div className="grid place-items-center py-32 text-ink-700">Loading…</div>;
 
   const active = memberships.find((m) => m.business.id === activeId) || memberships[0];
   const links = LINKS.filter((l) => {
@@ -72,7 +72,7 @@ export default function WorkspaceLayout() {
   };
 
   return (
-    <div className="min-h-screen lg:pl-72">
+    <div className="min-h-screen bg-[#f4fbfb] text-ink-900 lg:pl-72">
       {open && <div className="fixed inset-0 z-40 bg-ink-950/60 lg:hidden" onClick={() => setOpen(false)} />}
       <aside className={cn("fixed inset-y-0 left-0 z-50 w-72 bg-ink-950 text-white transition-transform lg:translate-x-0", open ? "translate-x-0" : "-translate-x-full")}>
         <div className="flex h-full flex-col px-4 py-6">
@@ -84,7 +84,7 @@ export default function WorkspaceLayout() {
             <select
               value={active.business.id}
               onChange={(e) => choose(e.target.value)}
-              className="mt-6 h-11 rounded-xl bg-white/10 px-3 text-sm"
+              className="mt-6 h-11 rounded-xl bg-surface/10 px-3 text-sm"
             >
               {memberships.map((m) => (
                 <option key={m.business.id} value={m.business.id}>{m.business.name}</option>
@@ -101,7 +101,7 @@ export default function WorkspaceLayout() {
                 to={item.to}
                 end={item.end}
                 onClick={() => setOpen(false)}
-                className={({ isActive }) => cn("flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold", isActive ? "bg-brand-600 text-white" : "text-white/60 hover:bg-white/5 hover:text-white")}
+                className={({ isActive }) => cn("flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold", isActive ? "bg-brand-400 text-[#1a140c]" : "text-white/60 hover:bg-surface/5 hover:text-white")}
               >
                 <item.icon size={18} /> {item.label}
               </NavLink>
@@ -113,7 +113,7 @@ export default function WorkspaceLayout() {
           </button>
         </div>
       </aside>
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-slate-900/5 bg-white/80 px-4 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-slate-900/5 bg-surface/80 px-4 backdrop-blur-xl">
         <button className="rounded-xl p-2 lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu"><Menu size={22} /></button>
         <p className="font-extrabold text-ink-900">{active.business.status === "approved" ? active.business.name : `${active.business.name} (${active.business.status})`}</p>
         <div className="ml-auto"><NotificationBell /></div>

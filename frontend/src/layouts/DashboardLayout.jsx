@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink, Outlet, useNavigate, Link } from "react-router-dom";
+import { NavLink, Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -9,7 +9,6 @@ import {
   Compass,
   LogOut,
   Menu,
-  Bell,
   Search,
   X,
   Store,
@@ -21,6 +20,7 @@ import {
 } from "lucide-react";
 import Logo from "../components/common/Logo";
 import Button from "../components/ui/Button";
+import NotificationBell from "../components/common/NotificationBell";
 import { useAuth } from "../context/AuthContext";
 import { useOwner } from "../context/OwnerContext";
 import { cn } from "../utils/cn";
@@ -39,7 +39,7 @@ function ownerNavFor(category) {
     category === "restaurant"
       ? [
           { to: "/manage/orders", label: "Orders", icon: ShoppingBag },
-          { to: "/manage/menu", label: "Menu", icon: BookOpen },
+          { to: "/manage/menu", label: "Menu", icon: BookOpen },           { to: "/manage/tables", label: "Tables", icon: QrCode },
         ]
       : [
           { to: "/manage/bookings", label: "Bookings", icon: CalendarDays },
@@ -59,14 +59,14 @@ function Sidebar({ variant, nav, business, onNavigate }) {
   };
 
   return (
-    <div className="flex h-full flex-col bg-gradient-to-b from-ink-900 to-ink-950 px-4 py-6 text-white">
+    <div className="flex h-full flex-col border-r border-line bg-surface px-3 py-4 text-ink-900">
       <div className="px-2">
         <Logo tone="light" to={variant === "owner" ? "/manage" : "/dashboard"} />
       </div>
 
       {variant === "owner" && business && (
-        <div className="mx-2 mt-6 rounded-2xl bg-white/5 px-4 py-3 ring-1 ring-white/10">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-brand-300">Your business</p>
+        <div className="mx-2 mt-6 rounded-xl border border-line bg-paper px-4 py-3">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-brand-700">Your business</p>
           <p className="mt-0.5 truncate text-sm font-bold">{business.name}</p>
         </div>
       )}
@@ -81,7 +81,7 @@ function Sidebar({ variant, nav, business, onNavigate }) {
             className={({ isActive }) =>
               cn(
                 "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold transition",
-                isActive ? "bg-brand-600 text-white shadow-glow" : "text-white/60 hover:bg-white/5 hover:text-white"
+                isActive ? "bg-brand-50 text-brand-800" : "text-ink-700 hover:bg-paper hover:text-ink-900"
               )
             }
           >
@@ -92,38 +92,38 @@ function Sidebar({ variant, nav, business, onNavigate }) {
       </nav>
 
       {variant === "owner" && business ? (
-        <div className="mb-4 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600/30 text-brand-200">
+        <div className="mb-4 rounded-xl border border-line bg-paper p-4">
+          <span className="grid h-9 w-9 place-items-center rounded-lg bg-brand-50 text-brand-800">
             <ExternalLink size={18} />
           </span>
-          <p className="mt-3 text-sm font-bold">Your public page</p>
-          <p className="mt-1 text-xs leading-relaxed text-white/50">See what customers see.</p>
+          <p className="mt-3 text-sm font-semibold">Your public page</p>
+          <p className="mt-1 text-xs leading-relaxed text-ink-700">See what customers see.</p>
           <Button as={Link} to={`/business/${business.slug}`} variant="light" size="sm" className="mt-3 w-full" onClick={onNavigate}>
             View page
           </Button>
         </div>
       ) : (
-        <div className="mb-4 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-600/30 text-brand-200">
+        <div className="mb-4 rounded-xl border border-line bg-paper p-4">
+          <span className="grid h-9 w-9 place-items-center rounded-lg bg-brand-50 text-brand-800">
             <Compass size={18} />
           </span>
-          <p className="mt-3 text-sm font-bold">Find something new</p>
-          <p className="mt-1 text-xs leading-relaxed text-white/50">Browse barbershops, salons and restaurants near you.</p>
+          <p className="mt-3 text-sm font-semibold">Find something new</p>
+          <p className="mt-1 text-xs leading-relaxed text-ink-700">Browse barbershops, salons and restaurants near you.</p>
           <Button as={Link} to="/businesses" variant="light" size="sm" className="mt-3 w-full" onClick={onNavigate}>
             Explore
           </Button>
         </div>
       )}
 
-      <div className="flex items-center gap-3 border-t border-white/10 pt-4">
-        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-600 text-sm font-bold">
+      <div className="flex items-center gap-3 border-t border-line pt-4">
+        <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-400 text-sm font-semibold text-[#1a140c]">
           {user.fullName.charAt(0).toUpperCase()}
         </span>
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-semibold">{user.fullName}</p>
-          <p className="truncate text-xs text-white/50">{user.email}</p>
+          <p className="truncate text-xs text-ink-700">{user.email}</p>
         </div>
-        <button onClick={handleLogout} aria-label="Logout" className="rounded-xl p-2 text-white/60 transition hover:bg-white/10 hover:text-white">
+        <button onClick={handleLogout} aria-label="Logout" className="rounded-lg p-2 text-ink-700 transition hover:bg-paper hover:text-ink-900">
           <LogOut size={18} />
         </button>
       </div>
@@ -133,6 +133,7 @@ function Sidebar({ variant, nav, business, onNavigate }) {
 
 export default function DashboardLayout({ variant = "customer" }) {
   const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
   const [query, setQuery] = useState("");
   const { user } = useAuth();
   const owner = useOwner(); // null outside the owner area
@@ -150,44 +151,47 @@ export default function DashboardLayout({ variant = "customer" }) {
   };
 
   return (
-    <div className="min-h-screen lg:pl-72">
-      {open && <div className="fixed inset-0 z-40 bg-ink-950/60 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} />}
+    <div className="min-h-screen bg-paper text-ink-900 lg:pl-72">
+      {open && <div className="fixed inset-0 z-40 bg-ink-950/40 lg:hidden" onClick={() => setOpen(false)} />}
 
       <aside className={cn("fixed inset-y-0 left-0 z-50 w-72 transition-transform duration-300 lg:translate-x-0", open ? "translate-x-0" : "-translate-x-full")}>
-        <button onClick={() => setOpen(false)} aria-label="Close menu" className="absolute right-3 top-5 z-10 rounded-xl p-2 text-white/70 hover:bg-white/10 lg:hidden">
+        <button onClick={() => setOpen(false)} aria-label="Close menu" className="absolute right-3 top-5 z-10 rounded-lg p-2 text-ink-700 hover:bg-paper lg:hidden">
           <X size={20} />
         </button>
         <Sidebar variant={variant} nav={nav} business={business} onNavigate={() => setOpen(false)} />
       </aside>
 
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-slate-900/5 bg-white/80 px-4 backdrop-blur-xl sm:px-8">
-        <button onClick={() => setOpen(true)} aria-label="Open menu" className="rounded-xl p-2 text-slate-700 hover:bg-slate-100 lg:hidden">
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-line bg-paper/90 px-4 backdrop-blur-md sm:px-6">
+        <button onClick={() => setOpen(true)} aria-label="Open menu" className="rounded-lg p-2 text-ink-900 hover:bg-surface lg:hidden">
           <Menu size={22} />
         </button>
-
+        <Link to="/profile" className="hidden items-center gap-3 sm:flex">
+          <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-400 text-sm font-semibold text-[#1a140c]">
+            {user.fullName.charAt(0).toUpperCase()}
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-semibold">{user.fullName}</span>
+            <span className="block truncate text-xs text-ink-700">{user.email}</span>
+          </span>
+        </Link>
         {variant === "owner" ? (
-          <p className="truncate text-sm font-bold text-ink-900">{business?.name}</p>
+          <p className="ml-auto truncate text-sm font-medium text-ink-700">{business?.name}</p>
         ) : (
-          <form onSubmit={handleSearch} className="relative max-w-md flex-1">
-            <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+          <form onSubmit={handleSearch} className="relative ml-auto w-full max-w-xs">
+            <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-700/50" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search businesses…"
-              className="h-11 w-full rounded-2xl border border-slate-200 bg-white pl-11 pr-4 text-sm outline-none transition placeholder:text-slate-400 focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
+              placeholder="Search places"
+              aria-label="Search"
+              className="h-10 w-full rounded-xl border border-line bg-surface pl-10 pr-4 text-sm text-ink-900 outline-none placeholder:text-ink-700/50 focus:border-brand-600 focus:ring-4 focus:ring-brand-100"
             />
           </form>
         )}
-
-        <div className="ml-auto flex items-center gap-2">
-          <button aria-label="Notifications" className="grid h-11 w-11 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50">
-            <Bell size={18} />
-          </button>
-          <span className="grid h-11 w-11 place-items-center rounded-full bg-brand-600 text-sm font-bold text-white">{user.fullName.charAt(0).toUpperCase()}</span>
-        </div>
+        <NotificationBell />
       </header>
 
-      <main className="px-4 py-8 sm:px-8">
+      <main key={pathname} className="page-in px-4 py-6 sm:px-6">
         <Outlet />
       </main>
     </div>

@@ -7,7 +7,7 @@ import Card from "../../components/ui/Card";
 import { parseApiError } from "../../utils/apiError";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const field = "h-11 w-full rounded-xl border border-slate-200 px-3 text-sm";
+const field = "h-11 w-full rounded-xl border border-line px-3 text-sm";
 
 export default function RegisterBusiness() {
   const { refresh } = useAuth();
@@ -42,7 +42,7 @@ export default function RegisterBusiness() {
   return (
     <form onSubmit={submit} className="mx-auto max-w-2xl px-4 py-10">
       <h1 className="text-3xl font-extrabold">List your business</h1>
-      <p className="mt-1 text-sm text-slate-500">It stays hidden until a platform admin approves it. You can still set up the workspace.</p>
+      <p className="mt-1 text-sm text-ink-700">It stays hidden until a platform admin approves it. You can still set up the workspace.</p>
       {error && <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>}
       <Card className="mt-6 space-y-4 p-6">
         <input className={field} placeholder="Business name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />

@@ -19,7 +19,7 @@ import BookingPanel from "../../components/booking/BookingPanel";
 import MenuView from "../../components/orders/MenuView";
 import CartPanel from "../../components/orders/CartPanel";
 import { useCart } from "../../context/CartContext";
-import { fetchBusiness, fetchServices, fetchStaff, fetchMenu } from "../../services/marketplaceService";
+import { fetchBusiness, fetchServices, fetchStaff, fetchMenu, fetchTable } from "../../services/marketplaceService";
 import { getCategory } from "../../utils/categories";
 import { todayIn, weekdayOf } from "../../utils/dates";
 import { formatClock, formatCount, formatPrice } from "../../utils/format";
@@ -40,7 +40,7 @@ function Message({ icon: Icon, title, text }) {
         <Icon size={28} />
       </span>
       <h1 className="mt-5 text-2xl font-extrabold text-ink-900">{title}</h1>
-      <p className="mt-1 text-slate-500">{text}</p>
+      <p className="mt-1 text-ink-700">{text}</p>
       <Button as={Link} to="/businesses" variant="soft" className="mt-6">
         Back to Explore
       </Button>
@@ -51,10 +51,10 @@ function Message({ icon: Icon, title, text }) {
 function Skeleton() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
-      <div className="h-72 animate-pulse rounded-3xl bg-slate-100" />
+      <div className="h-72 animate-pulse rounded-3xl bg-surface" />
       <div className="mt-6 grid gap-8 lg:grid-cols-[1fr_380px]">
-        <div className="h-96 animate-pulse rounded-3xl bg-slate-100" />
-        <div className="h-96 animate-pulse rounded-3xl bg-slate-100" />
+        <div className="h-96 animate-pulse rounded-3xl bg-surface" />
+        <div className="h-96 animate-pulse rounded-3xl bg-surface" />
       </div>
     </div>
   );
@@ -69,6 +69,32 @@ export default function BusinessDetail() {
   const [tab, setTab] = useState("services");
   const [serviceId, setServiceId] = useState("");
   const panelRef = useRef(null);
+
+  
+  // Table from a scanned QR code: /business/habesha-restaurant?table=CODE
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tableCode = searchParams.get("table") || "";
+  const [table, setTable] = useState({ status: tableCode ? "loading" : "none", info: null });
+
+  useEffect(() => {
+    if (!tableCode) {
+      setTable({ status: "none", info: null });
+      return;
+    }
+    const controller = new AbortController();
+    setTable({ status: "loading", info: null });
+    fetchTable(tableCode, controller.signal)
+      .then((info) => setTable({ status: "ready", info }))
+      .catch((err) => {
+        if (err.code !== "ERR_CANCELED") setTable({ status: "invalid", info: null });
+      });
+    return () => controller.abort();
+  }, [tableCode]);
+
+  // Only use the table if it really belongs to THIS restaurant
+  const activeTable =
+    table.status === "ready" && table.info.business.slug === slug ? { code: tableCode, label: table.info.table.label } : null;
+  const tableProblem = Boolean(tableCode) && (table.status === "invalid" || (table.status === "ready" && !activeTable));
 
   useEffect(() => {
     const controller = new AbortController();
@@ -172,9 +198,22 @@ export default function BusinessDetail() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
-      <Link to="/businesses" className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-brand-600">
+      <Link to="/businesses" className="inline-flex items-center gap-1.5 text-sm font-medium text-ink-700 hover:text-ink-900">
         <ArrowLeft size={16} /> Back to Explore
       </Link>
+      {activeTable && (
+        <div className="mt-5 flex items-center gap-3 rounded-2xl bg-brand-600 px-5 py-4 text-white shadow-glow">
+          <QrCode size={20} className="shrink-0" />
+          <p className="text-sm font-bold">You're ordering from {activeTable.label}</p>
+          <span className="ml-auto hidden text-xs text-white/80 sm:block">Staff will bring your order to the table</span>
+        </div>
+      )}
+      {tableProblem && (
+        <p className="mt-5 flex items-start gap-2 rounded-2xl bg-amber-50 px-5 py-4 text-sm font-medium text-amber-800">
+          <TriangleAlert size={16} className="mt-0.5 shrink-0" /> This table code isn't valid for this restaurant, so you can only
+          order for takeaway. Please ask the staff for help.
+        </p>
+      )}
 
       <div className="mt-5 grid items-start gap-8 lg:grid-cols-[1fr_380px]">
         {/* LEFT */}
@@ -187,14 +226,14 @@ export default function BusinessDetail() {
                 alt=""
                 className="absolute inset-0 h-full w-full object-cover"
               />
-              <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-ink-900 backdrop-blur">
+              <span className="absolute left-4 top-4 flex items-center gap-1.5 rounded-full bg-surface/90 px-3 py-1 text-xs font-bold text-ink-900 backdrop-blur">
                 <Icon size={13} /> {cat.label.replace(/s$/, "")}
               </span>
               {business.isOpen !== null && (
                 <span
                   className={cn(
                     "absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-bold backdrop-blur",
-                    business.isOpen ? "bg-emerald-500/90 text-white" : "bg-ink-900/70 text-white"
+                    business.isOpen ? "bg-emerald-500/90 text-white" : "bg-ink-950/80 text-ink-800"
                   )}
                 >
                   {business.isOpen ? "Open now" : "Closed"}
@@ -204,7 +243,7 @@ export default function BusinessDetail() {
 
             <div className="p-6">
               <div className="flex items-start justify-between gap-3">
-                <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">{business.name}</h1>
+                <h1 className="font-display text-4xl font-medium tracking-tight text-brand-400">{business.name}</h1>
                 <div className="flex shrink-0 items-center gap-2">
                   <button
                     type="button"
@@ -222,7 +261,7 @@ export default function BusinessDetail() {
                       setCopied(true);
                       setTimeout(() => setCopied(false), 1600);
                     }}
-                    className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 text-slate-600 hover:bg-slate-50"
+                    className="grid h-10 w-10 place-items-center rounded-full border border-line text-ink-700 hover:bg-brand-50"
                     aria-label={copied ? "Link copied" : "Share"}
                     title={copied ? "Link copied" : "Share"}
                   >
@@ -232,7 +271,7 @@ export default function BusinessDetail() {
                 </div>
               </div>
 
-              <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-600">
+              <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-700">
                 {business.ratingCount > 0 && (
                   <span className="flex items-center gap-1.5">
                     <Star size={16} className="fill-amber-400 text-amber-400" />
@@ -253,7 +292,7 @@ export default function BusinessDetail() {
                 )}
               </div>
 
-              {business.description && <p className="mt-4 text-slate-600">{business.description}</p>}
+              {business.description && <p className="mt-4 text-ink-700">{business.description}</p>}
               {business.acceptingRequests === false && (
                 <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
                   This business is not taking new bookings or orders right now.
@@ -283,7 +322,7 @@ export default function BusinessDetail() {
                     "-mb-px border-b-2 px-4 py-3 text-sm font-bold transition",
                     tab === t.key
                       ? "border-brand-600 text-brand-700"
-                      : "border-transparent text-slate-500 hover:text-ink-900"
+                      : "border-transparent text-ink-700 hover:text-ink-900"
                   )}
                 >
                   {t.label}
@@ -291,7 +330,7 @@ export default function BusinessDetail() {
               ))}
             </div>
 
-            <div className="p-2 sm:p-4">
+            <div key={tab} className="fade-in p-2 sm:p-4">
               {tab === "services" &&
                 (isBookable ? (
                   <ServiceList services={catalog.services} selectedId={serviceId} onSelect={handleSelectService} />
@@ -303,7 +342,7 @@ export default function BusinessDetail() {
                       <Utensils size={24} />
                     </span>
                     <p className="mt-4 font-bold text-ink-900">The menu is coming soon</p>
-                    <p className="mt-1 max-w-xs text-sm text-slate-500">This restaurant hasn't published its menu yet.</p>
+                    <p className="mt-1 max-w-xs text-sm text-ink-700">This restaurant hasn't published its menu yet.</p>
                   </div>
                 ))}
 
@@ -313,11 +352,11 @@ export default function BusinessDetail() {
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div>
                     <h3 className="font-extrabold text-ink-900">Address</h3>
-                    <p className="mt-2 flex items-start gap-2 text-sm text-slate-600">
+                    <p className="mt-2 flex items-start gap-2 text-sm text-ink-700">
                       <MapPin size={16} className="mt-0.5 shrink-0" /> {location || "Not provided"}
                     </p>
                     {business.phone && (
-                      <p className="mt-3 flex items-center gap-2 text-sm text-slate-600">
+                      <p className="mt-3 flex items-center gap-2 text-sm text-ink-700">
                         <Phone size={16} /> {business.phone}
                       </p>
                     )}
@@ -332,7 +371,7 @@ export default function BusinessDetail() {
                             key={d}
                             className={cn(
                               "flex justify-between rounded-lg px-3 py-1.5",
-                              d === todayDow ? "bg-brand-50 font-bold text-brand-700" : "text-slate-600"
+                              d === todayDow ? "bg-brand-50 font-bold text-brand-700" : "text-ink-700"
                             )}
                           >
                             <span>{DAY_NAMES[d]}</span>
@@ -360,7 +399,13 @@ export default function BusinessDetail() {
               onServiceChange={setServiceId}
             />
           ) : (
-            <CartPanel key={business.id} business={business} onStale={refreshMenu} />
+                    <CartPanel
+              key={business.id}
+              business={business}
+              table={activeTable}
+              onStale={refreshMenu}
+              onTableInvalid={() => setSearchParams({}, { replace: true })}
+            />
           )}
         </div>
       </div>

@@ -7,7 +7,7 @@ import { OwnerProvider, useOwner } from "../context/OwnerContext";
 function Inner() {
   const { status, retry } = useOwner();
 
-  if (status === "loading") return <div className="grid min-h-screen place-items-center text-slate-500">Loading your business…</div>;
+  if (status === "loading") return <div className="grid min-h-screen place-items-center text-ink-700">Loading your business…</div>;
   if (status === "none") return <Navigate to="/list-your-business" replace />;
   if (status === "error") {
     return (

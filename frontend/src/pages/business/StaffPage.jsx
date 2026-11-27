@@ -4,7 +4,7 @@ import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import { parseApiError } from "../../utils/apiError";
 
-const field = "h-11 w-full rounded-xl border border-slate-200 px-3 text-sm";
+const field = "h-11 w-full rounded-xl border border-line px-3 text-sm";
 
 export default function StaffPage() {
   const [staff, setStaff] = useState([]);
@@ -39,7 +39,7 @@ export default function StaffPage() {
   return (
     <div className="mx-auto max-w-3xl">
       <h1 className="text-3xl font-extrabold">Staff</h1>
-      <p className="mt-1 text-sm text-slate-500">Empty working hours means this person follows the business hours. Time off blocks a whole date.</p>
+      <p className="mt-1 text-sm text-ink-700">Empty working hours means this person follows the business hours. Time off blocks a whole date.</p>
       {error && <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>}
       <form onSubmit={create} className="mt-6 space-y-3">
         <div className="grid gap-3 sm:grid-cols-2">
@@ -48,7 +48,7 @@ export default function StaffPage() {
         </div>
         <div className="flex flex-wrap gap-2">
           {services.map((s) => (
-            <button type="button" key={s._id} onClick={() => toggleService(s._id)} className={`rounded-full px-3 py-1 text-xs font-bold ${form.serviceIds.includes(s._id) ? "bg-brand-600 text-white" : "bg-slate-100"}`}>
+            <button type="button" key={s._id} onClick={() => toggleService(s._id)} className={`rounded-full px-3 py-1 text-xs font-bold ${form.serviceIds.includes(s._id) ? "bg-brand-400 text-[#1a140c]" : "bg-surface"}`}>
               {s.name}
             </button>
           ))}
@@ -60,7 +60,7 @@ export default function StaffPage() {
           <Card key={person._id} className="flex items-center justify-between p-4">
             <div>
               <p className="font-bold">{person.name}</p>
-              <p className="text-sm text-slate-500">{person.title || "Staff"} · {person.active ? "Active" : "Paused"}</p>
+              <p className="text-sm text-ink-700">{person.title || "Staff"} · {person.active ? "Active" : "Paused"}</p>
             </div>
             <div className="flex gap-2">
               <Button size="sm" variant="outline" onClick={() => api.patch(`/workspace/staff/${person._id}`, { active: !person.active }).then(load)}>

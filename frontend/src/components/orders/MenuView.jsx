@@ -24,8 +24,8 @@ export default function MenuView({ business, categories }) {
             className={cn(
               "shrink-0 rounded-full px-4 py-2 text-sm font-semibold ring-1 transition",
               active === c.id
-                ? "bg-brand-600 text-white ring-brand-600"
-                : "bg-white text-slate-700 ring-slate-200 hover:bg-brand-50"
+                ? "bg-brand-400 text-[#1a140c] ring-brand-600"
+                : "bg-surface text-ink-800 ring-line hover:bg-brand-50"
             )}
           >
             {c.name}
@@ -36,7 +36,7 @@ export default function MenuView({ business, categories }) {
       <div className="space-y-6">
         {visible.map((cat) => (
           <section key={cat.id}>
-            <h3 className="px-1 text-sm font-bold uppercase tracking-wider text-slate-400">{cat.name}</h3>
+            <h3 className="px-1 text-sm font-bold uppercase tracking-wider text-ink-700">{cat.name}</h3>
             <ul className="mt-2 divide-y divide-slate-100">
               {cat.items.map((item) => {
                 const qty = qtyOf(item.id);
@@ -57,7 +57,7 @@ export default function MenuView({ business, categories }) {
 
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-ink-900">{item.name}</p>
-                      {item.description && <p className="mt-0.5 text-sm text-slate-500">{item.description}</p>}
+                      {item.description && <p className="mt-0.5 text-sm text-ink-700">{item.description}</p>}
                       <p className="mt-1 font-extrabold text-ink-900">{formatPrice(item.priceMinor)}</p>
                     </div>
 

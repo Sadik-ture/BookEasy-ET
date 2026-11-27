@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowLeft, Check, CircleAlert, Phone, ShoppingBag, Store } from "lucide-react";
+import { ArrowLeft, Check, CircleAlert, Phone, QrCode, ShoppingBag, Store } from "lucide-react";
 import Button from "../ui/Button";
 import Card from "../ui/Card";
 import QtyStepper from "./QtyStepper";
@@ -13,7 +13,8 @@ import { formatPrice } from "../../utils/format";
 
 const newId = () => globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
-export default function CartPanel({ business, onStale }) {
+// table: { code, label } when the customer scanned a table QR code, otherwise null
+export default function CartPanel({ business, table, onStale, onTableInvalid }) {
   const { user } = useAuth();
   const { cart, setQty, clear } = useCart();
   const navigate = useNavigate();
@@ -22,7 +23,6 @@ export default function CartPanel({ business, onStale }) {
   const [step, setStep] = useState("cart"); // cart | checkout | done
   const [phone, setPhone] = useState(user?.phone || "");
   const [notes, setNotes] = useState("");
-  const [promo, setPromo] = useState("");
   const [error, setError] = useState("");
   const [fields, setFields] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -31,13 +31,12 @@ export default function CartPanel({ business, onStale }) {
 
   const lines = cart.businessId === business.id ? cart.lines : [];
   const total = lines.reduce((sum, l) => sum + l.priceMinor * l.quantity, 0);
-  const promoCode = promo.trim().toUpperCase();
-  const discount = promoCode === "BOOK10" ? Math.floor(total * 0.1) : 0;
   const closed = business.isOpen === false;
 
   const goCheckout = () => {
     if (!user) {
-      navigate("/login", { state: { from: location.pathname } });
+      // Keep the full address (including ?table=...) so we come back to the same table
+      navigate("/login", { state: { from: location.pathname + location.search } });
       return;
     }
     setError("");
@@ -55,7 +54,7 @@ export default function CartPanel({ business, onStale }) {
         items: lines.map((l) => ({ menuItemId: l.id, quantity: l.quantity })),
         phone: phone.trim(),
         notes: notes.trim() || undefined,
-        promoCode: promoCode || undefined,
+        tableCode: table?.code,
         clientRequestId: requestId.current,
       });
       setPlaced(order);
@@ -66,10 +65,10 @@ export default function CartPanel({ business, onStale }) {
       const parsed = parseApiError(err);
       setError(parsed.message);
       setFields(parsed.fields);
-      const code = err.response?.data?.error?.code;
-      if (err.response?.status === 409 && code !== "PROMO_USED") {
+      if (err.response?.status === 409) {
         setStep("cart");
         onStale?.(); // reload the menu so prices and availability are current
+        if (err.response?.data?.error?.code === "TABLE_INVALID") onTableInvalid?.();
       }
     } finally {
       setSubmitting(false);
@@ -78,6 +77,7 @@ export default function CartPanel({ business, onStale }) {
 
   // ---------- Success ----------
   if (step === "done" && placed) {
+    const dineIn = placed.type === "dine_in";
     return (
       <Card className="p-6 text-center">
         <span className="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-emerald-50 text-emerald-600">
@@ -89,6 +89,7 @@ export default function CartPanel({ business, onStale }) {
         <div className="mt-5 rounded-2xl bg-brand-50 p-4">
           <p className="text-xs font-bold uppercase tracking-wider text-brand-700">Order number</p>
           <p className="mt-1 text-2xl font-extrabold tracking-wide text-ink-900">{placed.orderNumber}</p>
+          {dineIn && <p className="mt-1 text-sm font-bold text-brand-700">{placed.tableLabel}</p>}
         </div>
 
         <ul className="mt-5 space-y-2 text-left text-sm">
@@ -105,7 +106,11 @@ export default function CartPanel({ business, onStale }) {
             <span>{formatPrice(placed.totalMinor, placed.currency)}</span>
           </li>
         </ul>
-        <p className="mt-3 text-xs text-slate-500">Takeaway. Pay at the restaurant when you pick up.</p>
+        <p className="mt-3 text-xs text-slate-500">
+          {dineIn
+            ? `Dine-in at ${placed.tableLabel}. Staff will bring your order to your table. Pay at the restaurant.`
+            : "Takeaway. Pay at the restaurant when you pick up."}
+        </p>
 
         <div className="mt-6 flex gap-3">
           <Button as={Link} to="/my-orders" className="flex-1">
@@ -140,6 +145,12 @@ export default function CartPanel({ business, onStale }) {
           </button>
         )}
       </div>
+
+      {table && (
+        <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-brand-50 px-3 py-1.5 text-xs font-bold text-brand-700">
+          <QrCode size={14} /> Dine-in · {table.label}
+        </p>
+      )}
 
       {closed && (
         <p className="mt-4 flex items-start gap-2 rounded-xl bg-amber-50 px-4 py-3 text-sm font-medium text-amber-800">
@@ -178,23 +189,9 @@ export default function CartPanel({ business, onStale }) {
             ))}
           </ul>
 
-          <div className="mt-2 space-y-1 border-t border-slate-100 pt-4">
-            {discount > 0 && (
-              <>
-                <div className="flex items-center justify-between text-sm text-slate-500">
-                  <span>Subtotal</span>
-                  <span>{formatPrice(total)}</span>
-                </div>
-                <div className="flex items-center justify-between text-sm font-semibold text-emerald-700">
-                  <span>BOOK10</span>
-                  <span>− {formatPrice(discount)}</span>
-                </div>
-              </>
-            )}
-            <div className="flex items-center justify-between">
-              <span className="text-base font-bold text-ink-900">Total</span>
-              <span className="text-2xl font-extrabold text-ink-900">{formatPrice(total - discount)}</span>
-            </div>
+          <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-4">
+            <span className="text-base font-bold text-ink-900">Total</span>
+            <span className="text-2xl font-extrabold text-ink-900">{formatPrice(total)}</span>
           </div>
 
           {error && (
@@ -212,8 +209,10 @@ export default function CartPanel({ business, onStale }) {
           {step === "checkout" && (
             <div className="mt-5 space-y-4">
               <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm">
-                <p className="font-bold text-ink-900">Takeaway</p>
-                <p className="text-slate-500">Pay at the restaurant when you pick up.</p>
+                <p className="font-bold text-ink-900">{table ? `Dine-in · ${table.label}` : "Takeaway"}</p>
+                <p className="text-slate-500">
+                  {table ? "Staff will bring your order to your table. Pay at the restaurant." : "Pay at the restaurant when you pick up."}
+                </p>
               </div>
 
               <FormField
@@ -239,22 +238,12 @@ export default function CartPanel({ business, onStale }) {
                 />
               </label>
 
-              <label className="block">
-                <span className="mb-1.5 block text-sm font-semibold text-ink-800">Promo code</span>
-                <input
-                  value={promo}
-                  onChange={(e) => setPromo(e.target.value)}
-                  placeholder="BOOK10"
-                  className="h-11 w-full rounded-2xl border border-slate-200 px-4 text-sm uppercase outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-100"
-                />
-              </label>
-
               <div className="flex gap-3">
                 <Button variant="outline" onClick={() => setStep("cart")} disabled={submitting}>
                   <ArrowLeft size={16} /> Back
                 </Button>
                 <Button className="flex-1" size="lg" loading={submitting} onClick={placeOrder}>
-                  {submitting ? "Placing…" : `Place order · ${formatPrice(total - discount)}`}
+                  {submitting ? "Placing…" : `Place order · ${formatPrice(total)}`}
                 </Button>
               </div>
             </div>

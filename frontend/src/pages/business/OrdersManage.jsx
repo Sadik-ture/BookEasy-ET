@@ -43,7 +43,7 @@ export default function OrdersManage() {
       </div>
       {error && <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</p>}
       <div className="mt-6 space-y-3">
-        {items.length === 0 && <p className="text-sm text-slate-500">No active orders. New orders appear here within a few seconds.</p>}
+        {items.length === 0 && <p className="text-sm text-ink-700">No active orders. New orders appear here within a few seconds.</p>}
         {items.map((o) => {
           const st = ORDER_STATUS[o.status] || { label: o.status };
           return (
@@ -51,11 +51,11 @@ export default function OrdersManage() {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="font-extrabold">{o.orderNumber}</p>
-                  <p className="text-sm text-slate-500">{o.customerName} · {o.type === "dine_in" ? `Table ${o.tableLabel}` : "Takeaway"} · {o.phone}</p>
+                  <p className="text-sm text-ink-700">{o.customerName} · {o.type === "dine_in" ? `Table ${o.tableLabel}` : "Takeaway"} · {o.phone}</p>
                 </div>
                 <Badge tone={st.tone || "brand"}>{st.label}</Badge>
               </div>
-              <ul className="mt-3 text-sm text-slate-600">
+              <ul className="mt-3 text-sm text-ink-700">
                 {o.items.map((i) => <li key={i.name}>{i.quantity} × {i.name}</li>)}
               </ul>
               <p className="mt-2 font-bold">{formatPrice(o.totalMinor, o.currency)}</p>

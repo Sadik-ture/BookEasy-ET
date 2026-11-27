@@ -45,7 +45,7 @@ export default function Login() {
       footer={
         <>
           New to BookEasy ET?{" "}
-          <Link to="/signup" className="font-bold text-brand-600 hover:text-brand-700">
+         <Link to="/signup" state={location.state} className="font-bold text-brand-600 hover:text-brand-700">
             Create an account
           </Link>
         </>

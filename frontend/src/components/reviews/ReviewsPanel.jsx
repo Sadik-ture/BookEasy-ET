@@ -49,16 +49,16 @@ export default function ReviewsPanel({ slug }) {
 
   return (
     <div className="space-y-4">
-      {items.length === 0 && <p className="text-sm text-slate-500">No published reviews yet.</p>}
+      {items.length === 0 && <p className="text-sm text-ink-700">No published reviews yet.</p>}
       {items.map((r) => (
-        <div key={r.id} className="rounded-2xl bg-slate-50 p-4">
+        <div key={r.id} className="rounded-2xl bg-brand-50 p-4">
           <p className="text-sm font-bold">{r.customerName} · {r.rating}/5</p>
-          {r.comment && <p className="mt-1 text-sm text-slate-600">{r.comment}</p>}
+          {r.comment && <p className="mt-1 text-sm text-ink-700">{r.comment}</p>}
           {r.reply && <p className="mt-2 text-sm text-brand-700">Business: {r.reply}</p>}
         </div>
       ))}
       {user && options.length > 0 && (
-        <form onSubmit={submit} className="space-y-3 rounded-2xl border border-slate-200 p-4">
+        <form onSubmit={submit} className="space-y-3 rounded-2xl border border-line p-4">
           <p className="text-sm font-bold">Review a completed visit</p>
           <select className="h-11 w-full rounded-xl border px-3 text-sm" value={choice} onChange={(e) => setChoice(e.target.value)} required>
             <option value="">Choose a visit</option>

@@ -55,7 +55,7 @@ function StaffForm({ services, initial, onSaved, onClose }) {
                   key={s.id}
                   onClick={() => toggle(s.id)}
                   aria-pressed={on}
-                  className={cn("rounded-full px-4 py-2 text-sm font-semibold ring-1 transition", on ? "bg-brand-600 text-white ring-brand-600" : "bg-white text-slate-700 ring-slate-200 hover:bg-brand-50")}
+                  className={cn("rounded-full px-4 py-2 text-sm font-semibold ring-1 transition", on ? "bg-brand-400 text-[#1a140c] ring-brand-600" : "bg-surface text-ink-800 ring-line hover:bg-brand-50")}
                 >
                   {s.name}
                 </button>
@@ -64,7 +64,7 @@ function StaffForm({ services, initial, onSaved, onClose }) {
           </div>
         )}
       </div>
-      <p className="text-xs text-slate-500">Working hours follow your business opening hours.</p>
+      <p className="text-xs text-ink-700">Working hours follow your business opening hours.</p>
 
       {error && !Object.keys(fields).length && <p className="rounded-xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{error}</p>}
       <div className="flex gap-3 pt-2">
@@ -111,8 +111,8 @@ export default function ManageStaff() {
     <div className="mx-auto max-w-4xl">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">Staff</h1>
-          <p className="mt-1 text-slate-500">Customers pick a professional or choose "Any". Switch someone off to stop new bookings with them.</p>
+          <h1 className="font-display text-4xl font-medium tracking-tight text-ink-900">Staff</h1>
+          <p className="mt-1 text-ink-700">Customers pick a professional or choose "Any". Switch someone off to stop new bookings with them.</p>
         </div>
         <Button onClick={() => setModal({})}>
           <Plus size={16} /> Add staff
@@ -120,7 +120,7 @@ export default function ManageStaff() {
       </div>
 
       <div className="mt-6 space-y-3">
-        {status === "loading" && Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-24 animate-pulse rounded-3xl bg-slate-100" />)}
+        {status === "loading" && Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-24 animate-pulse rounded-3xl bg-surface" />)}
 
         {status === "error" && (
           <Card className="grid place-items-center px-6 py-14 text-center">
@@ -134,24 +134,24 @@ export default function ManageStaff() {
           <Card className="grid place-items-center px-6 py-14 text-center">
             <span className="grid h-14 w-14 place-items-center rounded-2xl bg-brand-50 text-brand-600"><Users size={24} /></span>
             <p className="mt-4 font-bold text-ink-900">No staff yet</p>
-            <p className="mt-1 max-w-xs text-sm text-slate-500">Add yourself or your team so customers can choose a time.</p>
+            <p className="mt-1 max-w-xs text-sm text-ink-700">Add yourself or your team so customers can choose a time.</p>
           </Card>
         )}
 
         {status === "ready" &&
           staff.map((s) => (
-            <Card key={s.id} className={cn("flex items-center gap-4 p-5", !s.active && "bg-slate-50")}>
+            <Card key={s.id} className={cn("flex items-center gap-4 p-5", !s.active && "bg-brand-50")}>
               <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-brand-100 text-lg font-extrabold text-brand-700">{s.name.charAt(0)}</span>
               <div className="min-w-0 flex-1">
-                <p className={cn("font-bold", s.active ? "text-ink-900" : "text-slate-400")}>
-                  {s.name} {s.title && <span className="font-normal text-slate-500">· {s.title}</span>}
+                <p className={cn("font-bold", s.active ? "text-ink-900" : "text-ink-700")}>
+                  {s.name} {s.title && <span className="font-normal text-ink-700">· {s.title}</span>}
                 </p>
-                <p className="truncate text-sm text-slate-500">
+                <p className="truncate text-sm text-ink-700">
                   {s.serviceIds.length ? s.serviceIds.map(nameOf).filter(Boolean).join(", ") : "No services assigned yet"}
                 </p>
               </div>
               <Switch checked={s.active} disabled={busyId === s.id} onChange={() => toggleActive(s)} label={`Accept bookings for ${s.name}`} />
-              <button onClick={() => setModal({ item: s })} aria-label={`Edit ${s.name}`} className="rounded-xl p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-700">
+              <button onClick={() => setModal({ item: s })} aria-label={`Edit ${s.name}`} className="rounded-xl p-2 text-ink-700 hover:bg-surface hover:text-brand-700">
                 <Pencil size={17} />
               </button>
             </Card>

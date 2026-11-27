@@ -20,11 +20,11 @@ export default function Modal({ title, onClose, children }) {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-white p-6 shadow-2xl"
+        className="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-3xl bg-surface p-6 shadow-2xl"
       >
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-xl font-extrabold text-ink-900">{title}</h2>
-          <button onClick={onClose} aria-label="Close" className="rounded-xl p-2 text-slate-500 hover:bg-slate-100">
+          <button onClick={onClose} aria-label="Close" className="rounded-xl p-2 text-ink-700 hover:bg-surface">
             <X size={20} />
           </button>
         </div>

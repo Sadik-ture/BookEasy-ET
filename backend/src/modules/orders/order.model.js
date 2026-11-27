@@ -19,15 +19,16 @@ const orderSchema = new mongoose.Schema(
     businessId: { type: mongoose.Schema.Types.ObjectId, ref: "Business", required: true },
     customerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     type: { type: String, enum: ORDER_TYPES, default: "takeaway" },
-    tableId: { type: mongoose.Schema.Types.ObjectId, ref: "RestaurantTable" },
-    tableLabel: { type: String, default: "" },
+
+    // Set for dine-in orders placed by scanning a table QR code
+    tableId: { type: mongoose.Schema.Types.ObjectId, ref: "Table" },
+    tableLabel: { type: String, default: "" }, // snapshot, so renaming a table doesn't rewrite history
+
     items: {
       type: [orderItemSchema],
       validate: [(v) => v.length > 0, "An order needs at least one item"],
     },
     subtotalMinor: { type: Number, required: true, min: 0 },
-    discountMinor: { type: Number, default: 0, min: 0 },
-    promoCode: { type: String, trim: true, uppercase: true, default: "" },
     totalMinor: { type: Number, required: true, min: 0 },
     currency: { type: String, default: "ETB" },
     status: { type: String, enum: ORDER_STATUSES, default: "pending" },
@@ -39,15 +40,7 @@ const orderSchema = new mongoose.Schema(
     // Sent by the browser so a double click or retry can't create a second order
     clientRequestId: { type: String },
 
-    estimatedReadyAt: { type: Date },
-    statusHistory: [
-      {
-        _id: false,
-        status: { type: String, enum: ORDER_STATUSES },
-        at: { type: Date },
-        by: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      },
-    ],
+    statusHistory: [{ _id: false, status: { type: String, enum: ORDER_STATUSES }, at: { type: Date } }],
     cancelledAt: { type: Date },
     cancelledBy: { type: String, enum: ["customer", "business"] },
   },

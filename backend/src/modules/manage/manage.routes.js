@@ -9,6 +9,7 @@ import { listBookings, updateBookingStatus } from "./bookings.controller.js";
 import { listOrders, updateOrderStatus } from "./orders.controller.js";
 import { getMenu, createCategory, createItem, updateItem } from "./menu.controller.js";
 import { listServices, createService, updateService, listStaff, createStaff, updateStaff } from "./catalog.controller.js";
+import { listTables, createTables, updateTable, rotateTable } from "./tables.controller.js";
 
 const router = Router();
 
@@ -45,12 +46,16 @@ router.get("/staff", bookable, listStaff);
 router.post("/staff", bookable, validate(v.createStaffSchema), createStaff);
 router.patch("/staff/:id", bookable, validate(v.updateStaffSchema), updateStaff);
 
-// Orders and menu (restaurants)
+// Orders, menu and tables (restaurants)
 router.get("/orders", restaurant, listOrders);
 router.patch("/orders/:id/status", restaurant, validate(v.orderStatusSchema), updateOrderStatus);
 router.get("/menu", restaurant, getMenu);
 router.post("/menu/categories", restaurant, validate(v.createCategorySchema), createCategory);
 router.post("/menu/items", restaurant, validate(v.createItemSchema), createItem);
 router.patch("/menu/items/:id", restaurant, validate(v.updateItemSchema), updateItem);
+router.get("/tables", restaurant, listTables);
+router.post("/tables", restaurant, validate(v.createTablesSchema), createTables);
+router.patch("/tables/:id", restaurant, validate(v.updateTableSchema), updateTable);
+router.post("/tables/:id/rotate", restaurant, rotateTable);
 
 export default router;

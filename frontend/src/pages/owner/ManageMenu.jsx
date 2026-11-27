@@ -115,8 +115,8 @@ export default function ManageMenu() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <h1 className="text-3xl font-extrabold tracking-tight text-ink-900">Menu</h1>
-      <p className="mt-1 text-slate-500">Hidden items stay in your menu but customers can't order them.</p>
+      <h1 className="font-display text-4xl font-medium tracking-tight text-ink-900">Menu</h1>
+      <p className="mt-1 text-ink-700">Hidden items stay in your menu but customers can't order them.</p>
 
       <Card className="mt-6 p-5">
         <form onSubmit={submitCategory} className="flex flex-col gap-3 sm:flex-row sm:items-start">
@@ -130,7 +130,7 @@ export default function ManageMenu() {
       </Card>
 
       <div className="mt-6 space-y-6">
-        {status === "loading" && Array.from({ length: 2 }).map((_, i) => <div key={i} className="h-44 animate-pulse rounded-3xl bg-slate-100" />)}
+        {status === "loading" && Array.from({ length: 2 }).map((_, i) => <div key={i} className="h-44 animate-pulse rounded-3xl bg-surface" />)}
 
         {status === "error" && (
           <Card className="grid place-items-center px-6 py-14 text-center">
@@ -144,7 +144,7 @@ export default function ManageMenu() {
           <Card className="grid place-items-center px-6 py-14 text-center">
             <span className="grid h-14 w-14 place-items-center rounded-2xl bg-orange-50 text-accent-600"><UtensilsCrossed size={24} /></span>
             <p className="mt-4 font-bold text-ink-900">Start your menu</p>
-            <p className="mt-1 max-w-xs text-sm text-slate-500">Add a category above, for example "Traditional Dishes", then add your dishes to it.</p>
+            <p className="mt-1 max-w-xs text-sm text-ink-700">Add a category above, for example "Traditional Dishes", then add your dishes to it.</p>
           </Card>
         )}
 
@@ -158,14 +158,14 @@ export default function ManageMenu() {
                 </Button>
               </div>
               {cat.items.length === 0 ? (
-                <p className="px-5 py-8 text-center text-sm text-slate-500">No items in this category yet.</p>
+                <p className="px-5 py-8 text-center text-sm text-ink-700">No items in this category yet.</p>
               ) : (
                 <ul className="divide-y divide-slate-100">
                   {cat.items.map((item) => (
-                    <li key={item.id} className={cn("flex items-center gap-4 px-5 py-4", !item.available && "bg-slate-50")}>
+                    <li key={item.id} className={cn("flex items-center gap-4 px-5 py-4", !item.available && "bg-brand-50")}>
                       <div className="min-w-0 flex-1">
-                        <p className={cn("font-bold", item.available ? "text-ink-900" : "text-slate-400")}>{item.name}</p>
-                        {item.description && <p className="truncate text-sm text-slate-500">{item.description}</p>}
+                        <p className={cn("font-bold", item.available ? "text-ink-900" : "text-ink-700")}>{item.name}</p>
+                        {item.description && <p className="truncate text-sm text-ink-700">{item.description}</p>}
                       </div>
                       <span className="font-extrabold text-ink-900">{formatPrice(item.priceMinor)}</span>
                       <div className="flex items-center gap-2" title={item.available ? "Visible to customers" : "Hidden"}>
@@ -174,7 +174,7 @@ export default function ManageMenu() {
                       <button
                         onClick={() => setModal({ item: { ...item, categoryId: cat.id } })}
                         aria-label={`Edit ${item.name}`}
-                        className="rounded-xl p-2 text-slate-500 hover:bg-slate-100 hover:text-brand-700"
+                        className="rounded-xl p-2 text-ink-700 hover:bg-surface hover:text-brand-700"
                       >
                         <Pencil size={17} />
                       </button>

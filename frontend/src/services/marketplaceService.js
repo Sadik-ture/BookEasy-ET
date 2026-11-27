@@ -43,3 +43,10 @@ export async function fetchMenu(slug, signal) {
   const res = await api.get(`/businesses/${encodeURIComponent(slug)}/menu`, { signal });
   return res.data.data.categories;
 }
+
+
+// Returns { table: { label }, business: { id, name, slug, isOpen } }
+export async function fetchTable(code, signal) {
+  const res = await api.get(`/tables/${encodeURIComponent(code)}`, { signal });
+  return res.data.data;
+}

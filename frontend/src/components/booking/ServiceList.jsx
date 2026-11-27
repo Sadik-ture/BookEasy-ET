@@ -5,7 +5,7 @@ import { cn } from "../../utils/cn";
 
 export default function ServiceList({ services, selectedId, onSelect }) {
   if (!services.length) {
-    return <p className="py-10 text-center text-sm text-slate-500">This business hasn't added any services yet.</p>;
+    return <p className="py-10 text-center text-sm text-ink-700">This business hasn't added any services yet.</p>;
   }
 
   return (
@@ -22,8 +22,8 @@ export default function ServiceList({ services, selectedId, onSelect }) {
           >
             <div className="min-w-0 sm:px-3">
               <p className="font-bold text-ink-900">{s.name}</p>
-              {s.description && <p className="mt-0.5 text-sm text-slate-500">{s.description}</p>}
-              <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-500">
+              {s.description && <p className="mt-0.5 text-sm text-ink-700">{s.description}</p>}
+              <p className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-ink-700">
                 <Clock size={13} /> {formatDuration(s.durationMinutes)}
               </p>
             </div>

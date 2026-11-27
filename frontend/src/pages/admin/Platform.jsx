@@ -17,11 +17,11 @@ function useData(path) {
 export function AdminHome() {
   const { data, error } = useData("/admin/metrics");
   if (error) return <p className="text-sm text-rose-600">{error}</p>;
-  if (!data) return <div className="h-24 animate-pulse rounded-3xl bg-slate-100" />;
+  if (!data) return <div className="h-24 animate-pulse rounded-3xl bg-surface" />;
   return (
     <div className="grid gap-4 sm:grid-cols-3">
       {Object.entries(data).map(([k, v]) => (
-        <Card key={k} className="p-5"><p className="text-sm capitalize text-slate-500">{k}</p><p className="mt-2 text-3xl font-extrabold">{v}</p></Card>
+        <Card key={k} className="p-5"><p className="text-sm capitalize text-ink-700">{k}</p><p className="mt-2 text-3xl font-extrabold">{v}</p></Card>
       ))}
     </div>
   );
@@ -36,7 +36,7 @@ export function AdminBusinesses() {
     <div className="space-y-3">
       {data.items.map((b) => (
         <Card key={b._id} className="flex flex-wrap items-center justify-between gap-3 p-4">
-          <div><p className="font-bold">{b.name}</p><p className="text-sm text-slate-500">{b.category} · {b.status}</p></div>
+          <div><p className="font-bold">{b.name}</p><p className="text-sm text-ink-700">{b.category} · {b.status}</p></div>
           <div className="flex gap-2">
             {["approved", "rejected", "suspended"].map((status) => (
               <Button key={status} size="sm" variant="outline" onClick={() => setStatus(b._id, status)}>{status}</Button>
@@ -57,7 +57,7 @@ export function AdminUsers() {
     <div className="space-y-3">
       {data.items.map((u) => (
         <Card key={u._id} className="flex flex-wrap items-center justify-between gap-3 p-4">
-          <div><p className="font-bold">{u.fullName}</p><p className="text-sm text-slate-500">{u.email} · {u.role} · {u.status}</p></div>
+          <div><p className="font-bold">{u.fullName}</p><p className="text-sm text-ink-700">{u.email} · {u.role} · {u.status}</p></div>
           <div className="flex gap-2">
             <Button size="sm" variant="outline" onClick={() => api.patch(`/admin/users/${u._id}/status`, { status: u.status === "active" ? "suspended" : "active" }).then(reload)}>
               {u.status === "active" ? "Suspend" : "Activate"}
@@ -87,7 +87,7 @@ export function AdminPlans() {
   return (
     <div className="space-y-4">
       {plans.data.items.map((p) => (
-        <Card key={p._id} className="p-4"><p className="font-bold">{p.name}</p><p className="text-sm text-slate-500">{formatPrice(p.monthlyPriceMinor)} / month · staff {p.limits.maxStaff}</p></Card>
+        <Card key={p._id} className="p-4"><p className="font-bold">{p.name}</p><p className="text-sm text-ink-700">{formatPrice(p.monthlyPriceMinor)} / month · staff {p.limits.maxStaff}</p></Card>
       ))}
       <form onSubmit={assign} className="grid gap-3 sm:grid-cols-2">
         <select className="h-11 rounded-xl border px-3" value={businessId} onChange={(e) => setBusinessId(e.target.value)} required>
@@ -113,7 +113,7 @@ export function AdminReviews() {
       {data.items.map((r) => (
         <Card key={r._id} className="p-4">
           <p className="font-bold">{r.rating}/5 {r.hidden ? "hidden" : "visible"}</p>
-          <p className="text-sm text-slate-600">{r.comment}</p>
+          <p className="text-sm text-ink-700">{r.comment}</p>
           <Button size="sm" className="mt-2" variant="outline" onClick={() => api.patch(`/admin/reviews/${r._id}`, { hidden: !r.hidden }).then(reload)}>
             {r.hidden ? "Publish" : "Hide"}
           </Button>
@@ -143,7 +143,7 @@ export function AdminSettings() {
       </form>
       <div>
         <h2 className="font-extrabold">Audit log</h2>
-        <ul className="mt-2 space-y-1 text-sm text-slate-600">
+        <ul className="mt-2 space-y-1 text-sm text-ink-700">
           {(audit.data?.items || []).map((a) => (
             <li key={a._id}>{a.action} · {a.targetType}</li>
           ))}

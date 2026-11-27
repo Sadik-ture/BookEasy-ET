@@ -37,8 +37,8 @@ export default function Overview() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div>
           <p className="text-sm font-semibold text-brand-600">Business dashboard</p>
-          <h1 className="mt-1 text-3xl font-extrabold tracking-tight text-ink-900">{business.name}</h1>
-          <p className="mt-1 text-slate-500">Here's what needs your attention today.</p>
+          <h1 className="mt-1 font-display text-4xl font-medium tracking-tight text-ink-900">{business.name}</h1>
+          <p className="mt-1 text-ink-700">Here's what needs your attention today.</p>
         </div>
         <Button as={Link} to={`/business/${business.slug}`} variant="outline">
           <ExternalLink size={16} /> View public page
@@ -78,7 +78,7 @@ export default function Overview() {
           {isRestaurant ? (
             <>
               <Button as={Link} to="/manage/orders">Open orders</Button>
-              <Button as={Link} to="/manage/menu" variant="outline">Edit menu</Button>
+              <Button as={Link} to="/manage/menu" variant="outline">Edit menu</Button>               <Button as={Link} to="/manage/tables" variant="outline">Table QR codes</Button>
             </>
           ) : (
             <>
@@ -89,7 +89,7 @@ export default function Overview() {
           )}
         </div>
         {!isRestaurant && (
-          <p className="mt-4 text-sm text-slate-500">
+          <p className="mt-4 text-sm text-ink-700">
             Customers can only book once you have at least one service and one staff member who performs it.
           </p>
         )}

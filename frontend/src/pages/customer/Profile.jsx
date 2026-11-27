@@ -51,7 +51,7 @@ export default function Profile() {
         <form onSubmit={saveProfile} className="space-y-4">
           <FormField label="Full name" value={fullName} onChange={(e) => setFullName(e.target.value)} required />
           <FormField label="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
-          <p className="text-sm text-slate-500">{user.email}</p>
+          <p className="text-sm text-ink-700">{user.email}</p>
           <Button type="submit">Save profile</Button>
         </form>
       </Card>

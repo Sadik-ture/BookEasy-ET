@@ -1,5 +1,4 @@
 import { LayoutGrid } from "lucide-react";
-import Card from "../ui/Card";
 import { CATEGORIES } from "../../utils/categories";
 import { cn } from "../../utils/cn";
 
@@ -12,31 +11,29 @@ export default function CategoryFilter({ value, onChange, counts = {}, total = 0
 
   return (
     <>
-      {/* Mobile: horizontal chips */}
       <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 lg:hidden">
         {items.map((item) => (
           <button
             key={item.key || "all"}
             onClick={() => onChange(item.key)}
             className={cn(
-              "flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold ring-1 transition",
+              "flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-medium ring-1 transition",
               value === item.key
-                ? "bg-brand-600 text-white ring-brand-600"
-                : "bg-white text-slate-700 ring-slate-200 hover:bg-brand-50"
+                ? "bg-brand-400 text-[#1a140c] ring-brand-400"
+                : "bg-surface text-ink-800 ring-line hover:bg-paper"
             )}
           >
-            <item.icon size={16} />
+            <item.icon size={15} />
             {item.label}
           </button>
         ))}
       </div>
 
-      {/* Desktop: sidebar */}
-      <Card className="sticky top-24 hidden p-3 lg:block">
-        <h2 className="px-3 pb-2 pt-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+      <div className="sticky top-24 hidden rounded-2xl border border-line bg-surface p-2 lg:block">
+        <h2 className="px-3 pb-2 pt-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-700/70">
           Categories
         </h2>
-        <ul className="space-y-1">
+        <ul className="space-y-0.5">
           {items.map((item) => {
             const active = value === item.key;
             return (
@@ -44,19 +41,14 @@ export default function CategoryFilter({ value, onChange, counts = {}, total = 0
                 <button
                   onClick={() => onChange(item.key)}
                   className={cn(
-                    "flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-sm font-semibold transition",
-                    active ? "bg-brand-50 text-brand-700" : "text-slate-600 hover:bg-slate-50"
+                    "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition",
+                    active ? "bg-brand-50 text-brand-800" : "text-ink-800 hover:bg-paper"
                   )}
                 >
-                  <item.icon size={18} />
+                  <item.icon size={17} />
                   <span className="flex-1 text-left">{item.label}</span>
                   {showCounts && (
-                    <span
-                      className={cn(
-                        "rounded-full px-2 py-0.5 text-xs",
-                        active ? "bg-brand-100 text-brand-700" : "bg-slate-100 text-slate-500"
-                      )}
-                    >
+                    <span className={cn("text-xs tabular-nums", active ? "text-brand-700" : "text-ink-700/60")}>
                       {item.count}
                     </span>
                   )}
@@ -65,7 +57,7 @@ export default function CategoryFilter({ value, onChange, counts = {}, total = 0
             );
           })}
         </ul>
-      </Card>
+      </div>
     </>
   );
 }

@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children }) {
   const location = useLocation();
 
   if (loading) {
-    return <div className="grid place-items-center py-32 text-slate-500">Loading…</div>;
+    return <div className="grid place-items-center py-32 text-ink-700">Loading…</div>;
   }
   if (!user) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />;

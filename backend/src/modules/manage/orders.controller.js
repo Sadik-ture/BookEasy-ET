@@ -7,7 +7,8 @@ const fail = (res, status, code, message) => res.status(status).json({ success: 
 const view = (o) => ({
   id: o._id,
   orderNumber: o.orderNumber,
-  type: o.type,
+   type: o.type,
+  tableLabel: o.tableLabel || "",
   status: o.status,
   items: o.items.map((i) => ({ name: i.name, quantity: i.quantity, lineTotalMinor: i.lineTotalMinor })),
   totalMinor: o.totalMinor,

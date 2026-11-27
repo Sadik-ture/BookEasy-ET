@@ -13,27 +13,27 @@ export default function StatCard({ icon: Icon, label, value, hint, tone = "brand
       className={cn(
         "rounded-3xl p-5 ring-1 transition hover:-translate-y-0.5",
         dark
-          ? "bg-ink-900 text-white shadow-soft ring-ink-800"
-          : "bg-white shadow-soft ring-slate-900/5"
+          ? "bg-ink-950 text-brand-400 shadow-soft ring-brand-400/30"
+          : "bg-surface shadow-soft ring-slate-900/5"
       )}
     >
       <div className="flex items-start justify-between">
         <span
           className={cn(
             "grid h-11 w-11 place-items-center rounded-2xl",
-            dark ? "bg-white/10 text-white" : tones[tone]
+            dark ? "bg-surface/10 text-white" : tones[tone]
           )}
         >
           <Icon size={20} />
         </span>
         {hint && (
-          <span className={cn("text-xs font-medium", dark ? "text-white/50" : "text-slate-400")}>
+          <span className={cn("text-xs font-medium", dark ? "text-white/50" : "text-ink-700")}>
             {hint}
           </span>
         )}
       </div>
       <p className="mt-5 text-3xl font-extrabold tracking-tight">{value}</p>
-      <p className={cn("mt-1 text-sm", dark ? "text-white/60" : "text-slate-500")}>{label}</p>
+      <p className={cn("mt-1 text-sm", dark ? "text-white/60" : "text-ink-700")}>{label}</p>
     </div>
   );
 }

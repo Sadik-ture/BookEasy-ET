@@ -26,14 +26,14 @@ export default function BookingsManage() {
     <div className="mx-auto max-w-3xl">
       <h1 className="text-3xl font-extrabold">Bookings</h1>
       <div className="mt-6 space-y-3">
-        {items.length === 0 && <p className="text-sm text-slate-500">No bookings yet.</p>}
+        {items.length === 0 && <p className="text-sm text-ink-700">No bookings yet.</p>}
         {items.map((b) => (
           <Card key={b.id} className="p-4">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="font-extrabold">{b.serviceName}</p>
-                <p className="text-sm text-slate-500">{b.customerName} · {b.staffName}</p>
-                <p className="text-sm text-slate-500">{formatDateTime(b.startAt)} · {formatPrice(b.priceMinor, b.currency)}</p>
+                <p className="text-sm text-ink-700">{b.customerName} · {b.staffName}</p>
+                <p className="text-sm text-ink-700">{formatDateTime(b.startAt)} · {formatPrice(b.priceMinor, b.currency)}</p>
               </div>
               <Badge>{b.status}</Badge>
             </div>

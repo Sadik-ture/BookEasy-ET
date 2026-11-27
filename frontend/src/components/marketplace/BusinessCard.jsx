@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import { MapPin, Star } from "lucide-react";
-import Button from "../ui/Button";
+import { Star } from "lucide-react";
 import { getCategory } from "../../utils/categories";
 import { formatCount } from "../../utils/format";
 import FavoriteButton from "./FavoriteButton";
@@ -12,36 +11,37 @@ export default function BusinessCard({ business: b }) {
   const location = [b.address?.area, b.address?.city].filter(Boolean).join(", ");
 
   return (
-    <article className="group relative overflow-hidden rounded-3xl bg-white shadow-soft ring-1 ring-slate-900/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl">
-      <FavoriteButton businessId={b.id} className="absolute right-3 top-3 z-10" />
-      {/* Cover */}
-      <Link to={to} className="relative block h-40 overflow-hidden" aria-label={b.name}>
-        <img
-          src={b.coverImage || cat.photo}
-          alt=""
-          loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
-        />
-      </Link>
-
-      <div className="p-4">
-        <Link to={to}>
-          <h3 className="truncate text-base font-extrabold text-ink-900">{b.name}</h3>
+    <article className="motion-card flex flex-col border border-brand-400/35 bg-surface">
+      <div className="relative">
+        <FavoriteButton businessId={b.id} className="absolute right-3 top-3 z-10" />
+        <Link to={to} className="relative block aspect-square overflow-hidden bg-ink-950" aria-label={b.name}>
+          <img
+            src={b.coverImage || cat.photo}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
         </Link>
-        <div className="mt-1.5 flex items-center gap-1.5 text-sm">
-          <Star size={15} className="fill-amber-400 text-amber-400" />
-          <span className="font-bold text-ink-900">{b.ratingCount > 0 ? b.ratingAvg.toFixed(1) : "New"}</span>
-          {b.ratingCount > 0 && <span className="text-slate-500">({formatCount(b.ratingCount)} reviews)</span>}
+      </div>
+      <div className="flex flex-1 flex-col gap-2 px-3 py-3.5">
+        <div className="flex items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-400">
+          <span>{cat.label.replace(/s$/, "")}</span>
+          <span className="inline-flex items-center gap-1 text-ink-800">
+            <Star size={11} className="fill-brand-400 text-brand-400" />
+            {b.ratingCount > 0 ? b.ratingAvg.toFixed(1) : "New"}
+            {b.ratingCount > 0 && <span className="text-ink-700">({formatCount(b.ratingCount)})</span>}
+          </span>
         </div>
-        {location && (
-          <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-500">
-            <MapPin size={14} className="shrink-0" />
-            <span className="truncate">{location}</span>
-          </p>
-        )}
-        <Button as={Link} to={to} className="mt-4 w-full rounded-xl">
+        <Link to={to}>
+          <h3 className="truncate font-display text-lg text-brand-400">{b.name}</h3>
+        </Link>
+        {location && <p className="truncate text-xs text-ink-700">{location}</p>}
+        <Link
+          to={to}
+          className="mt-auto inline-flex items-center gap-2 pt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-brand-400 transition hover:text-brand-700"
+        >
           {cat.action}
-        </Button>
+        </Link>
       </div>
     </article>
   );

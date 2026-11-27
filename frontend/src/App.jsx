@@ -6,6 +6,7 @@ import OwnerGuard, { OnlyFor } from "./routes/OwnerGuard";
 import Home from "./pages/public/Home";
 import Explore from "./pages/public/Explore";
 import BusinessDetail from "./pages/public/BusinessDetail";
+import ScanTable from "./pages/public/ScanTable";
 import Login from "./pages/public/Login";
 import Signup from "./pages/public/Signup";
 import Dashboard from "./pages/customer/Dashboard";
@@ -18,6 +19,7 @@ import ManageOrders from "./pages/owner/ManageOrders";
 import ManageMenu from "./pages/owner/ManageMenu";
 import ManageServices from "./pages/owner/ManageServices";
 import ManageStaff from "./pages/owner/ManageStaff";
+import ManageTables from "./pages/owner/ManageTables";
 import ComingSoon from "./pages/common/ComingSoon";
 
 export default function App() {
@@ -28,6 +30,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/businesses" element={<Explore />} />
         <Route path="/business/:slug" element={<BusinessDetail />} />
+        <Route path="/t/:code" element={<ScanTable />} />
         <Route path="/about" element={<ComingSoon title="About" />} />
         <Route path="/contact" element={<ComingSoon title="Contact" />} />
         <Route path="*" element={<ComingSoon title="Page not found" message="That page doesn't exist." />} />
@@ -67,6 +70,7 @@ export default function App() {
         <Route path="/manage/staff" element={<OnlyFor restaurant={false}><ManageStaff /></OnlyFor>} />
         <Route path="/manage/orders" element={<OnlyFor restaurant><ManageOrders /></OnlyFor>} />
         <Route path="/manage/menu" element={<OnlyFor restaurant><ManageMenu /></OnlyFor>} />
+        <Route path="/manage/tables" element={<OnlyFor restaurant><ManageTables /></OnlyFor>} />
       </Route>
     </Routes>
   );

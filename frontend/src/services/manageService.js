@@ -31,3 +31,10 @@ export const updateService = (id, payload) => api.patch(`/manage/services/${id}`
 export const listManageStaff = async (signal) => data(await api.get("/manage/staff", { signal })).items;
 export const addStaff = (payload) => api.post("/manage/staff", payload);
 export const updateStaff = (id, payload) => api.patch(`/manage/staff/${id}`, payload);
+
+
+// Tables
+export const listTables = async (signal) => data(await api.get("/manage/tables", { signal })).items;
+export const addTables = (count) => api.post("/manage/tables", { count });
+export const updateTable = (id, payload) => api.patch(`/manage/tables/${id}`, payload);
+export const rotateTable = async (id) => data(await api.post(`/manage/tables/${id}/rotate`));

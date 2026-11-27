@@ -1,8 +1,8 @@
 import { cn } from "../../utils/cn";
 
 const base =
-  "w-full rounded-2xl border bg-white px-4 text-sm outline-none transition placeholder:text-slate-400 focus:ring-4";
-const ok = "border-slate-200 focus:border-brand-500 focus:ring-brand-100";
+  "w-full rounded-2xl border bg-surface px-4 text-sm outline-none transition placeholder:text-ink-700 focus:ring-4";
+const ok = "border-line focus:border-brand-500 focus:ring-brand-100";
 const bad = "border-rose-400 focus:ring-rose-100";
 
 export function SelectField({ label, error, children, ...props }) {

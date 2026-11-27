@@ -13,11 +13,11 @@ export default function ReviewsManage() {
   return (
     <div className="mx-auto max-w-3xl space-y-3">
       <h1 className="text-3xl font-extrabold">Reviews</h1>
-      {items.length === 0 && <p className="text-sm text-slate-500">No reviews yet.</p>}
+      {items.length === 0 && <p className="text-sm text-ink-700">No reviews yet.</p>}
       {items.map((r) => (
         <Card key={r._id} className="p-4">
           <p className="font-bold">{r.rating} / 5 {r.hidden ? "· hidden" : ""}</p>
-          <p className="mt-1 text-sm text-slate-600">{r.comment}</p>
+          <p className="mt-1 text-sm text-ink-700">{r.comment}</p>
           {r.reply && <p className="mt-2 text-sm text-brand-700">Reply: {r.reply}</p>}
           {!r.hidden && (
             <form className="mt-3 flex gap-2" onSubmit={(e) => { e.preventDefault(); api.patch(`/workspace/reviews/${r._id}/reply`, { reply: reply[r._id] || "" }).then(load); }}>
